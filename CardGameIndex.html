@@ -18,6 +18,15 @@
             justify-content: center;
             align-items: center;
         }
+        .leftUI{
+            justify-content: left;
+            float: left;
+            margin-right: -50%;
+            border: solid 1px;
+            background-color: rgb(114, 114, 212);
+            width: 400px;
+            height: 200px;
+        }
         .map{
             margin: auto;
             width: 50%;
@@ -73,11 +82,52 @@
             padding: 8px;
             width: 160px;
         }
+        .loginform{
+            text-align: center;
+            color: white;
+            font-size: large;
+        }
+        p{
+            margin: 10px;
+        }
+        .btn{
+            display: inline-block;
+            margin: auto;
+            margin-top: 15px;
+            width: fit-content;
+            border: solid 1px white;
+            padding: 5px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .btn:hover{
+            color: yellow;
+            background-color: rgb(79, 148, 250);
+            border: solid 1px yellow;
+        }
+        .btn:active{
+            background-color: black;
+        }
     </style>
 </head>
 <body>
     <div id="tip" class="tip"></div>
+    <div id="leftui" class="leftUI">
+        <form class="loginform">
+            <p>账号</p>
+            <input type="text">
+            <p>密码</p>
+            <input type="password">
+            <div class="btns">
+                <div class="btn default-btn">登录</div>
+                <div class="btn default-btn">注册</div>
+            </div>
+            
+        </form>
+        <div id="gameactions"></div>
+    </div>
     <div id="gamescene" class="gamescene">
+        
         <div id="map" class="map">
             <div id="enamygrids" class="enamygrids">
                 <div id="goldenareagrids" class="grids goldenareagrids">
@@ -155,6 +205,7 @@
         }
         $(function(){
             $("#tip").hide();
+            $("#gameactions").hide();
             $("div").mouseenter(function (e) {
                 if(!tipcontent.has($(this).attr("data-areatag"))){
                     return;
