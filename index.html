@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .mapgrid{
+            position:absolute;
+            border:solid 1px;
+            width:10px;
+            height:10px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="emptygridaction">
+        <button id="setfirst">设立首府</button>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket=io();
+        var nowchosegird='';
+        function hide(divid){
+            $("#"+divid).hide();
+        }
+        function chosegrid(id){
+            nowchosegird=id;
+            socket.emit('action',{
+                'name':'getgrid',
+                'x':parseInt(nowchosegird.split('_')[0]),
+                'y':parseInt(nowchosegird.split('_')[1])
+            })
+        }
+        $(function(){
+            hide("emptygridaction");
+
+            for(var i=0;i<20;i++){
+                for(var j=0;j<20;j++){
+                    $("body").append("<div id='"+i+"_"+j+"' class='mapgrid' style='left:"+(i*10)+"px;top:"+(j*10)+"px;' onclick=chosegrid(this.id)></div>")
+                }
+            }
+
+            $("#setfirst").click(function(){
+                socket.emit('action',{
+                    'name':'setfirst',
+                    'x':parseInt(nowchosegird.split('_')[0]),
+                    'y':parseInt(nowchosegird.split('_')[1])
+                });
+            });
+        })
+    </script>
+</body>
+</html>

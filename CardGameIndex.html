@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+
+    <title>元素战争</title>
+    <style>
+        .gamescene{
+            width: 800px;
+            height: 800px;
+            border: solid 1px;
+            background-color: rgb(97, 123, 238);
+            margin:auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .map{
+            margin: auto;
+            width: 50%;
+            padding: 50px 0;
+            text-align: center;
+            display: inline-block;
+            font-size: 0;
+        }
+        .area{
+            width: 50px;
+            height: 50px;
+            border: solid 1px;
+            display: inline-block;
+            margin: 5px;
+        }
+        .grids{
+            width: 50px;
+            margin: 6px;
+
+        }
+        .grid{
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            border:dotted 1px;
+            display: inline-block;
+        }
+        .enamygrids,.playergrids{
+            display: flex;
+            justify-content: center;
+        }
+        .goldenarea{
+            background-color: gold;
+        }
+        .woodenarea{
+            background-color: green;
+        }
+        .waterarea{
+            background-color: skyblue;
+        }
+        .firearea{
+            background-color: red;
+        }
+        .landarea{
+            background-color: cadetblue;
+        }
+        .tip{
+            border: solid 1px;
+            position: absolute;
+            pointer-events: none;
+            border-radius: 3px;
+            background-color: rgb(199, 111, 28);
+            padding: 8px;
+            width: 160px;
+        }
+    </style>
+</head>
+<body>
+    <div id="tip" class="tip"></div>
+    <div id="gamescene" class="gamescene">
+        <div id="map" class="map">
+            <div id="enamygrids" class="enamygrids">
+                <div id="goldenareagrids" class="grids goldenareagrids">
+                    <div id="goldenarea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="goldenarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="goldenarea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+                <div id="woodenareagrids" class="grids woodenareagrids">
+                    <div id="woodenarea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="woodenarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="woodenarea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+                <div id="waterareagrids" class="grids waterareagrids">
+                    <div id="waterarea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="waterarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="waterarea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+                <div id="fireareagrids" class="grids fireareagrids">
+                    <div id="firearea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="firearea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="firearea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+                <div id="landareagrids" class="grids landareagrids">
+                    <div id="landarea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="landarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="landarea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+            </div>
+            <div id="goldenarea" class="area goldenarea" data-areatag="金元素地"></div>
+            <div id="woodenarea" class="area woodenarea" data-areatag="木元素地"></div>
+            <div id="waterarea" class="area waterarea" data-areatag="水元素地"></div>
+            <div id="firearea" class="area firearea" data-areatag="火元素地"></div>
+            <div id="landarea" class="area landarea" data-areatag="土元素地"></div>
+            <div id="playergrids" class="playergrids">
+                <div id="goldenareagrids" class="grids goldenareagrids">
+                    <div id="goldenarea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="goldenarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="goldenarea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+                <div id="woodenareagrids" class="grids woodenareagrids">
+                    <div id="woodenarea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="woodenarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="woodenarea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+                <div id="waterareagrids" class="grids waterareagrids">
+                    <div id="waterarea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="waterarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="waterarea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+                <div id="fireareagrids" class="grids fireareagrids">
+                    <div id="firearea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="firearea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="firearea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+                <div id="landareagrids" class="grids landareagrids">
+                    <div id="landarea_1" class="grid" data-areatag="空领地"></div>
+                    <div id="landarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="landarea_3" class="grid" data-areatag="空领地"></div>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <script>
+        var tipcontent=new Map();
+        tipcontent.set("金元素地","<div>在此处的角色在凝聚阶段可获得2点<span style='color:#ffff00;'>金元素</span></div>");
+        tipcontent.set("木元素地","<div>在此处的角色在凝聚阶段可获得2点<span style='color:#00ff00;'>木元素</span></div>");
+        tipcontent.set("水元素地","<div>在此处的角色在凝聚阶段可获得2点<span style='color:#00ffff;'>水元素</span></div>");
+        tipcontent.set("火元素地","<div>在此处的角色在凝聚阶段可获得2点<span style='color:#ac0000;'>火元素</span></div>");
+        tipcontent.set("土元素地","<div>在此处的角色在凝聚阶段可获得2点<span style='color:#f1c59c;'>土元素</span></div>");
+        tipcontent.set("空领地","<div>可以在此处召唤<span style='color:#1d3ccd;'>标记</span></div>");
+        function showtip(content){
+            $("#tip").html(content);
+            $("#tip").show();
+        }
+        $(function(){
+            $("#tip").hide();
+            $("div").mouseenter(function (e) {
+                if(!tipcontent.has($(this).attr("data-areatag"))){
+                    return;
+                }
+                showtip($(this).attr("data-areatag")+"<hr>"+tipcontent.get($(this).attr("data-areatag")));
+            }).mousemove(function(e){
+                $("#tip").css({"left":e.pageX+"px","top":e.pageY+"px"});
+            }).mouseleave(function(e){
+                $("#tip").hide();
+            });
+        })
+    </script>
+</body>
+</html>

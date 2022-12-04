@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <script src="perlinnoise.js"></script>
+</head>
+<body>
+
+    <div id="map" style="width: 1200px;height:1200px;">
+
+    </div>
+<button id="start">开始</button>
+    <script>
+        const GRID_SIZE=4;
+        const mapwidth=50;
+        const mapheight=50;
+        const chushu=20;
+
+        var MAP=new Map();
+        var MAP_BUILDING=new Map();
+        class building{
+            constructor(x,y,name,text,color){
+                this.x=x;
+                this.y=y;
+                this.name=name;
+                this.text=text==""?name[0]:text;
+                this.color=color;
+                MAP_BUILDING.set(x+","+y,this);
+            }
+        }
+        class grid{
+            constructor(x,y,div){
+                this.x=x;
+                this.y=y;
+                this.div=$(div);
+                this.building=null;
+                this.building_=null;
+            }
+            set building(val){
+                if(val==null){
+                    this.building_=null;
+                    return;
+                }
+                this.building_=val;
+                this.div.text=val.text;
+                $(this.div).css({"background-color":"red"});
+                console.log(this.div);
+            }
+        }
+        let k=0;
+        function getdiv(id){
+            console.log($(id).attr("id"));
+            let key=$(id).attr("id");
+            $(id).css("background-color","red");
+            let grid_=MAP.get(key);
+            grid_.building=new building(grid_.x,grid_.y,"Core","","red");
+        }
+        $(function(){
+            $("#start").click(function(){
+
+            })
+
+            for(let i=0;i<mapwidth;i++){
+                for(let j=0;j<mapheight;j++){
+                    k=perlin.get(i/chushu,j/chushu)*1000;
+                    if(k<-50){
+                        $("#map").append("<div onclick='getdiv(this)' id='"+i+","+j+"' style='position:absolute;top:"+i*24+"px;left:"+j*24+"px;width:24px;height:24px;border:solid 1px;'></div>");
+                        var g=new grid(i,j,$("#"+i+","+j));
+                        MAP.set(i+","+j,g);
+                    }
+                }
+            }
+            
+        });
+        //setInterval(updateMap(),1000);
+    </script>
+</body>
+</html>

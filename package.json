@@ -1,0 +1,10 @@
+{
+    "name": "game",
+    "version": "0.0.1",
+    "description": "my game all right belong to Lauyang yang.",
+    "dependencies": {
+        "crypto-js": "^4.1.1",
+        "express": "^4.18.2",
+        "socket.io": "^4.5.2"
+    }
+}
