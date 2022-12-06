@@ -122,6 +122,8 @@
             display: inline-block;
             transition: all 0.2s;
             user-select: none;
+            position: relative;
+            
         }
         .card:hover{
             background-color: burlywood;
@@ -130,11 +132,12 @@
             background-color: chocolate;
         }
         .cardtitle{
-            height: 26px;
-            width: 90%;
+            height: 20px;
+            width: 95%;
+            text-align: center;
             border: solid 1px;
             margin: auto;
-            margin-top: 5px;
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -222,10 +225,10 @@
     </div>
     <div class="handarea">
         <div class="card">
-            <div class="cardtitle"><span>标题</span></div>
+            <div class="cardtitle">标题</div>
         </div>
         <div class="card">
-            
+            <div class="cardtitle">标题</div>
         </div>
     </div>
     
