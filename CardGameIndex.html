@@ -139,10 +139,13 @@
             margin: auto;
             vertical-align: middle;
         }
+        .svg{
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
-    <svg width="100%" height="100%" style="position:absolute;">
+    <svg width="100%" height="100%" style="position:absolute;" class="svg">
         <path d="M100 300 S250 200 400 300" id="zhishixian" style="stroke:red;stroke-width:5;fill:none;"></path>
     </svg>
     <div id="tip" class="tip"></div>
@@ -296,7 +299,7 @@
                 }
                 let posx=e.pageX;
                 let posy=e.pageY;
-                $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S250 200 "+posx+" "+posy);
+                $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S250 100 "+posx+" "+posy);
             })
         })
     </script>
