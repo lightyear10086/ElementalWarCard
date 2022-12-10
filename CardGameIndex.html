@@ -317,7 +317,15 @@
                 $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S"+chosecardposx+" "+chosecardposy+" "+chosecardposx+" "+chosecardposy);
                 $("#zhishixian").show();
             });
-        })
+        });
+        socket.on('action',function(msg){
+                console.log(msg);
+                if(msg.name=='loginstate'){
+                    if(msg.state=='success'){
+                        $("#leftui").hide();
+                    }
+                }
+            });
     </script>
 </body>
 </html>
