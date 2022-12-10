@@ -10,7 +10,7 @@
     <style>
         .gamescene{
             width: 800px;
-            height: 800px;
+            height: 600px;
             border: solid 1px;
             background-color: rgb(144, 157, 214);
             margin:auto;
@@ -109,10 +109,13 @@
         .btn:active{
             background-color: black;
         }
-        .markimg{
+        .markimg,.playerimg{
             display: block;
             width: 100%;
             height: 100%;
+        }
+        .playerimg:hover{
+            cursor: move;
         }
         .card{
             width: 111px;
@@ -260,6 +263,8 @@
             tipcontent.set(marktagname,marktagcontent+"<img src='Images/"+imgurl+".png'>");
         }
         $(function(){
+            var playerdiv="<img id='playerimg' class='playerimg' src='Images/player.png'>";
+            
             $("#tip").hide();
             $("#gameactions").hide();
             $("div").mouseenter(function (e) {
@@ -275,18 +280,21 @@
             putmark("咒潮钢华","player_goldenarea_1","咒潮钢华","当你受到伤害时，消耗你的【金】元素用以抵挡即将到来的伤害");
             putmark("铁蒺藜","enamy_goldenarea_1","铁蒺藜","【敌落】敌人受到3点伤害，损失2点木元素");
             putmark("金属囚笼","enamy_waterarea_2","金属囚笼","【敌落】敌人在下一个移动阶段不能移动");
+            putmark("幽林静野","enamy_waterarea_3","幽林静野","当你的角色位于此区域时，+2生命");
             $("#zhishixian").hide();
             let movecard=false;
             let chosecardposx=-1;
             let chosecardposy=-1;
+            $("#goldenarea").append(playerdiv);
             $(".card").mousedown(function(e){
                 chosecardposx=e.pageX;
                 chosecardposy=e.pageY;
-                $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S250 200 "+chosecardposx+" "+chosecardposy);
+                $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S"+chosecardposx+" "+chosecardposy+" "+chosecardposx+" "+chosecardposy);
                 $("#zhishixian").show();
                 movecard=true;
             }).mouseup(function(){
                 movecard=false;
+                $("#zhishixian").hide();
             })
             $("body").mouseup(function(){
                 if(movecard){
@@ -299,8 +307,15 @@
                 }
                 let posx=e.pageX;
                 let posy=e.pageY;
-                $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S150 500 "+posx+" "+posy);
-            })
+                $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S"+(chosecardposx/0.5)+" "+(chosecardposy/3)+" "+posx+" "+posy);
+            });
+            $("#playerimg").mousedown(function(e){
+                console.log("player")
+                chosecardposx=e.pageX;
+                chosecardposy=e.pageY;
+                $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S"+chosecardposx+" "+chosecardposy+" "+chosecardposx+" "+chosecardposy);
+                $("#zhishixian").show();
+            });
         })
     </script>
 </body>
