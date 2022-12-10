@@ -264,6 +264,20 @@
             tipcontent.set(marktagname,marktagcontent+"<img src='Images/"+imgurl+".png'>");
         }
         $(function(){
+            $("#register").click(function(){
+                socket.emit('action',{
+                    'name':'register',
+                    'accountname':$("#accounttext").val(),
+                    'password':$("#passwordtext").val()
+                })
+            });
+            $("#login").click(function(){
+                socket.emit('action',{
+                    'name':'login',
+                    'accountname':$("#accounttext").val(),
+                    'password':$("#passwordtext").val()
+                })
+            })
             var playerdiv="<img id='playerimg' class='playerimg' src='Images/player.png'>";
             
             $("#tip").hide();
