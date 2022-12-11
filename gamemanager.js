@@ -7,7 +7,7 @@ const server=http.createServer(app);
 const {Server}=require('socket.io');
 const io=new Server(server);
 var mysql=require('mysql');
-
+process.env.PWD=process.cwd();
 var connection=mysql.createConnection({
     host:'localhost',
     user:'root',
@@ -24,9 +24,8 @@ connection.connect(function(err){
 app.get('/',(req,res)=>{
     res.sendFile(__dirname+'/CardGameIndex.html');
 });
-app.use('/Images',(req,res)=>{
-    express.static('public/Images');
-})
+app.use(express.static(process.env.PWD+'/public'));
+
 
 
 io.on('connection',(socket)=>{
