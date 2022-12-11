@@ -168,6 +168,7 @@
             
         </form>
         <div id="gameactions">
+            <div class="btn default-btn" id="groupmanager">配置卡组</div>
             <div class="btn default-btn" id="match">开始匹配</div>
         </div>
     </div>
@@ -239,12 +240,9 @@
         
     </div>
     <div class="handarea">
-        <div class="card">
+        <!-- <div class="card">
             <div class="cardtitle">标题</div>
-        </div>
-        <div class="card">
-            <div class="cardtitle">标题</div>
-        </div>
+        </div> -->
     </div>
     <script src="/socket.io/socket.io.js">
     </script>
@@ -273,6 +271,11 @@
             tipcontent.set(marktagname,marktagcontent+"<img src='Images/"+imgurl+".png'>");
         }
         $(function(){
+            $("#match").click(function(){
+                socket.emit('action',{
+                    'name':'match'
+                })
+            })
             $("#register").click(function(){
                 socket.emit('action',{
                     'name':'register',
@@ -350,6 +353,9 @@
                     }
                 }
             });
+        socket.on('message',function(msg){
+            console.log(msg);
+        })
     </script>
 </body>
 </html>

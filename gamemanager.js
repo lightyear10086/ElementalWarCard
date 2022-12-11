@@ -6,6 +6,9 @@ const http=require('http');
 const server=http.createServer(app);
 const {Server}=require('socket.io');
 const io=new Server(server);
+
+var OnlinePlayerList=new Map();
+
 var mysql=require('mysql');
 process.env.PWD=process.cwd();
 var connection=mysql.createConnection({
@@ -30,10 +33,13 @@ app.use(express.static(process.env.PWD+'/public'));
 
 io.on('connection',(socket)=>{
     console.log('a user connected');
-    
+    let PlayerSelf=null;
     socket.on('disconnect',(reason)=>{
         console.log('disconnect'+reason);
-        
+        if(!PlayerSelf){
+            return;
+        }
+        PlayerSelf.OffLine();
     });
     socket.on('action',function(value){
         console.log(value);
@@ -56,7 +62,8 @@ io.on('connection',(socket)=>{
                     socket.emit('action',{
                         'name':'loginstate',
                         'state':'success'
-                    })
+                    });
+                    PlayerSelf= new GlobalPlayer(accountname,socket);
                 }else{
                     socket.emit('action',{
                         'name':'loginstate',
@@ -64,6 +71,17 @@ io.on('connection',(socket)=>{
                     })
                 }
             })
+        }
+        if(value.name=='match'){
+            console.log("玩家匹配");
+            PlayerSelf.matching=true;
+            for(let i of OnlinePlayerList){
+                if(i[1]!=PlayerSelf && i[1].matching && i[1].enamy==null){
+                    i[1].MatchEnamy(PlayerSelf);
+                    PlayerSelf.MatchEnamy(i[1]);
+                    break;
+                }
+            }
         }
     });
 });
@@ -206,7 +224,32 @@ class MessageHandle {
 
 
 }
+//全局玩家
+class GlobalPlayer{
+    constructor(playername,socket_){
+        this.playername=playername;
+        this.matching=false;//是否在匹配
+        this.enamy=null;//(GlobalPlayer)正在对战的敌人
+        this.playerSocket=socket_;
+        OnlinePlayerList.set(socket_,this);
+    }
+    MatchEnamy(enamyplayer){
+        this.enamy=enamyplayer;
+        this.matching=false;
+        this.playerSocket.emit('message',{
+            'content':'已找到敌人:'+enamyplayer.playername
+        })
+    }
+    OffLine(){
+        if(this.enamy!=null){
+            this.enamy.playerSocket.emit('message',{
+                'content':'enamyOffLine'
+            });
+        }
 
+        OnlinePlayerList.delete(this.playerSocket);
+    }
+}
 //对局玩家
 class Player {
     constructor() {
@@ -231,6 +274,7 @@ class Land {
         this.property = property; //属性
         this.markList1 = []; //己方的标记集合
         this.markList2 = []; //对方的标记集合
+        this.markPlayerList=[];//地块上的玩家列表
     }
 
     getMarkList1() {
