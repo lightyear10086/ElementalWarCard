@@ -109,10 +109,16 @@
         .btn:active{
             background-color: black;
         }
-        .markimg,.playerimg{
+        .markimg,.playerimg,.enamyimg{
             display: block;
             width: 100%;
             height: 100%;
+        }
+        .playerimg{
+            margin-left: -5px;
+        }
+        .enamyimg{
+            margin-left: 5px;
         }
         .playerimg:hover{
             cursor: move;
@@ -307,6 +313,8 @@
     <script src="/socket.io/socket.io.js">
     </script>
     <script>
+        var playerdiv="<img id='playerimg' class='playerimg' src='Images/player.png'>";
+        var enamydiv="<img id='enamyimg' class='enamyimg' src='Images/enamy.png'>"
         var logintest={
             'name':'可乐丸子'
         }
@@ -329,6 +337,47 @@
             $("#"+areaid).append("<img class='markimg' src='Images/"+imgurl+".png'>");
             $("#"+areaid).attr("data-areatag",marktagname);
             tipcontent.set(marktagname,marktagcontent+"<img src='Images/"+imgurl+".png'>");
+        }
+        function setPlayerArea(areaid){
+            $("#playerimg").detach();
+            switch(areaid){
+                case "Jin":
+                $("#goldenarea").append(playerdiv);
+                break;
+                case "Mu":
+                $("#woodenarea").append(playerdiv);
+                break;
+                case "Shui":
+                $("#waterarea").append(playerdiv);
+                break;
+                case "Huo":
+                $("#firearea").append(playerdiv);
+                break;
+                case "Tu":
+                $("#landarea").append(playerdiv);
+                break;
+            }
+        }
+        function setEnamyArea(areaid){
+            $("#enamyimg").detach();
+            console.log("敌人放置",areaid);
+            switch(areaid){
+                case "Jin":
+                $("#goldenarea").append(enamydiv);
+                break;
+                case "Mu":
+                $("#woodenarea").append(enamydiv);
+                break;
+                case "Shui":
+                $("#waterarea").append(enamydiv);
+                break;
+                case "Huo":
+                $("#firearea").append(enamydiv);
+                break;
+                case "Tu":
+                $("#landarea").append(enamydiv);
+                break;
+            }
         }
         $(function(){
             $(".area").click(function(){
@@ -365,8 +414,7 @@
                     'password':$("#passwordtext").val()
                 })
             })
-            var playerdiv="<img id='playerimg' class='playerimg' src='public/Images/player.png'>";
-            var enamydiv="<img id='enamyimg' class='enamyimg' src='public/Images/enamy.png'>"
+            
             $("#tip").hide();
             $("#gameactions").hide();
             $("div").mouseenter(function (e) {
@@ -424,47 +472,7 @@
                 $("#zhishixian").show();
             });
         });
-        function setPlayerArea(areaid){
-            $("#playerimg").remove();
-            console.log("放置",areaid);
-            switch(areaid){
-                case "Jin":
-                jin.append(playerdiv);
-                break;
-                case "Mu":
-                mu.append(playerdiv);
-                break;
-                case "Shui":
-                shui.append(playerdiv);
-                break;
-                case "Huo":
-                huo.append(playerdiv);
-                break;
-                case "Tu":
-                tu.append(playerdiv);
-                break;
-            }
-        }
-        function setEnamyArea(areaid){
-            $("#enamyimg").remove();
-            switch(areaid){
-                case "Jin":
-                jin.append(enamydiv);
-                break;
-                case "Mu":
-                mu.append(enamydiv);
-                break;
-                case "Shui":
-                shui.append(enamydiv);
-                break;
-                case "Huo":
-                huo.append(enamydiv);
-                break;
-                case "Tu":
-                tu.append(enamydiv);
-                break;
-            }
-        }
+        
         socket.on('action',function(msg){
                 console.log(msg);
                 if(msg.name=='loginstate'){
@@ -505,16 +513,16 @@
                 if(msg.name=='setArea'){
                     setPlayerArea(msg.area);
                 }
-                if(msg.name=='setEnamyArea'){
+                if(msg.name=='enamySetArea'){
                     setEnamyArea(msg.area);
                 }
             });
         socket.on('message',function(msg){
             console.log(msg);
         });
-        socket.on('tipalert',function(msg){
-            alert(msg.content);
-        })
+        // socket.on('tipalert',function(msg){
+        //     alert(msg.content);
+        // })
     </script>
 </body>
 </html>
