@@ -358,7 +358,7 @@ class GlobalPlayer{
     }
     MatchEnamy(enamyplayer){
         this.enamy=enamyplayer;
-        this.matching=false;
+        this.matching=false; 
         this.playerSocket.emit('action',{
             'name':'findenamy'
         })
