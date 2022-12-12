@@ -64,6 +64,23 @@ io.on('connection',(socket)=>{
                         'state':'success'
                     });
                     PlayerSelf= new GlobalPlayer(accountname,socket);
+                    sql="SELECT cards FROM playerallcards WHERE playername='"+accountname+"'";
+                    connection.query(sql,function(err,res,fields){
+                        if(err) throw err;
+                        console.log(res[0].cards);
+                        for(let j of JSON.parse(res[0].cards)){
+                            console.log("卡牌id:"+j.id+"卡牌数量:"+j.count);
+                            sql="SELECT id,cardname,cardinfo,cardjson,forbidden FROM cardinfo WHERE id="+parseInt(j.id);
+                            connection.query(sql,function(err,res){
+                                if(err) throw err;
+                                socket.emit('action',{
+                                    'name':'cardinfo',
+                                    'card':res,
+                                    'count':j.count
+                                })
+                            })
+                        }
+                    })
                 }else{
                     socket.emit('action',{
                         'name':'loginstate',
@@ -74,6 +91,10 @@ io.on('connection',(socket)=>{
         }
         if(value.name=='match'){
             console.log("玩家匹配");
+            if(PlayerSelf.matching && PlayerSelf.enamy==null){
+                PlayerSelf.matching=false;
+                return;
+            }
             PlayerSelf.matching=true;
             for(let i of OnlinePlayerList){
                 if(i[1]!=PlayerSelf && i[1].matching && i[1].enamy==null){
@@ -107,8 +128,19 @@ server.listen(8808,()=>{
 回合阶段 +
  */
 
+var ALLROOMS=[];
+class GameRoom{
+    constructor(p1,p2){
+        this.p1=p1;
+        this.p2=p2;
 
-
+        ALLROOMS.push(this);
+    }
+    GameInit(){}
+    GameBegin(){}
+    GameUpdate(){}
+    GameOver(){}
+}
 class GameUtils {
 
 
@@ -231,6 +263,7 @@ class GlobalPlayer{
         this.matching=false;//是否在匹配
         this.enamy=null;//(GlobalPlayer)正在对战的敌人
         this.playerSocket=socket_;
+        this.gamePlayer=null;//对局玩家
         OnlinePlayerList.set(socket_,this);
     }
     MatchEnamy(enamyplayer){

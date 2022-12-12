@@ -94,7 +94,7 @@
         .btn{
             display: inline-block;
             margin: auto;
-            margin-top: 15px;
+            /* margin-top: 15px; */
             width: fit-content;
             border: solid 1px white;
             padding: 5px;
@@ -148,6 +148,48 @@
         .gameactions{
             padding: 10px;
         }
+        .cardwarehouse{
+            position:absolute;
+            width: 640px;
+            background-color: rgb(70, 96, 165);
+            border: solid 1px;
+            color: white;
+        }
+        .windowtitlebar{
+            width: 100%;
+            height: 20px;
+            border-top: solid 1px;
+            border-bottom:solid 1px;
+            background-color: rgb(212, 170, 30);
+            line-height: 20px;
+            text-align: center;
+            color: blueviolet;
+        }
+        .windowtoolbar{
+            width: 100%;
+            height: auto;
+            border-top: solid 1px;
+            border-bottom:solid 1px;
+            background-color: rgb(174, 175, 82);
+            line-height: 20px;
+            text-align: center;
+            color: rgb(0, 0, 0);
+        }
+        .windowtitlebar:hover{
+            cursor: move;
+        }
+        .screen{
+            border: solid 1px;
+        }
+        .cardgroupselect{
+            width: 100%;
+        }
+        .playercardlist{
+            width: 100%;
+        }
+        .cardcount{
+            float: right;
+        }
     </style>
 </head>
 <body>
@@ -171,8 +213,26 @@
             <div class="btn default-btn" id="groupmanager">配置卡组</div>
             <div class="btn default-btn" id="match">开始匹配</div>
         </div>
+        
     </div>
-    
+    <div id="cardwarehouse" class="cardwarehouse default-window">
+        <div class="windowtitlebar" data-bindwindowid="cardwarehouse">卡组编辑</div>
+        <div class="windowtoolbar">
+            <div class="btn default-btn">新建卡组</div>
+            <div class="btn default-btn">保存卡组</div>
+            <div class="btn default-btn">删除卡组</div>
+            <div class="btn default-btn">导入卡组</div>
+            <div class="btn default-btn">导出卡组</div>
+        </div>
+        <div class="screen" id="playerallcards" style="float:left;width: 33%;">
+            <select id="playercardlist" size="30" class="playercardlist"></select>
+        </div>
+        <div class="screen" id="playereditgroup" style="float:left;width: 33%;">
+            <select id="cardgroupselect" class="cardgroupselect"></select>
+        </div>
+        <div class="screen" id="chosecardinfo" style="float:left;width: 33%;">当前选中卡牌的信息</div>
+
+    </div>
     <div id="gamescene" class="gamescene">
         
         <div id="map" class="map">
@@ -240,9 +300,9 @@
         
     </div>
     <div class="handarea">
-        <!-- <div class="card">
+        <div class="card">
             <div class="cardtitle">标题</div>
-        </div> -->
+        </div>
     </div>
     <script src="/socket.io/socket.io.js">
     </script>
@@ -271,6 +331,15 @@
             tipcontent.set(marktagname,marktagcontent+"<img src='Images/"+imgurl+".png'>");
         }
         $(function(){
+            $("#cardwarehouse").hide();
+            $(".windowtitlebar").click(function(){
+                console.log("隐藏",$(this).attr("data-bindwindowid"));
+                $("#"+$(this).attr("data-bindwindowid")).hide();
+            })
+            $("#groupmanager").click(function(){
+                $("#cardwarehouse").show();
+                
+            })
             $("#match").click(function(){
                 socket.emit('action',{
                     'name':'match'
@@ -304,7 +373,7 @@
             }).mouseleave(function(e){
                 $("#tip").hide();
             });
-            // putmark("咒潮钢华","player_goldenarea_1","咒潮钢华","当你受到伤害时，消耗你的【金】元素用以抵挡即将到来的伤害");
+            putmark("炽暗焰冢","player_goldenarea_1","炽暗焰冢","当你受到伤害时，消耗你的【金】元素用以抵挡即将到来的伤害");
             // putmark("铁蒺藜","enamy_goldenarea_1","铁蒺藜","【敌落】敌人受到3点伤害，损失2点木元素");
             // putmark("金属囚笼","enamy_waterarea_2","金属囚笼","【敌落】敌人在下一个移动阶段不能移动");
             // putmark("幽林静野","enamy_waterarea_3","幽林静野","当你的角色位于此区域时，+2生命");
@@ -351,6 +420,10 @@
                         $("#loginform").hide();
                         $("#gameactions").show();
                     }
+                }
+                if(msg.name=='cardinfo'){
+                    console.log(msg);
+                    $("#playercardlist").append("<option value='"+msg.card[0].cardname+"'>"+msg.card[0].cardname+"<span class='cardcount'>x"+msg.count+"</span></option>")
                 }
             });
         socket.on('message',function(msg){
