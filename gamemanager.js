@@ -7,7 +7,7 @@ const server=http.createServer(app);
 const {Server}=require('socket.io');
 const io=new Server(server);
 
-var OnlinePlayerList=new Map();
+var OnlinePlayerMap=new Map();
 
 var mysql=require('mysql');
 process.env.PWD=process.cwd();
@@ -67,7 +67,9 @@ io.on('connection',(socket)=>{
                     sql="SELECT cards FROM playerallcards WHERE playername='"+accountname+"'";
                     connection.query(sql,function(err,res,fields){
                         if(err) throw err;
-                        console.log(res[0].cards);
+                        if(res.length<=0){
+                            return;
+                        }
                         for(let j of JSON.parse(res[0].cards)){
                             console.log("卡牌id:"+j.id+"卡牌数量:"+j.count);
                             sql="SELECT id,cardname,cardinfo,cardjson,forbidden FROM cardinfo WHERE id="+parseInt(j.id);
@@ -96,13 +98,60 @@ io.on('connection',(socket)=>{
                 return;
             }
             PlayerSelf.matching=true;
-            for(let i of OnlinePlayerList){
+            for(let i of OnlinePlayerMap){
                 if(i[1]!=PlayerSelf && i[1].matching && i[1].enamy==null){
                     i[1].MatchEnamy(PlayerSelf);
                     PlayerSelf.MatchEnamy(i[1]);
                     break;
                 }
             }
+        }
+        if(value.name=='duel'){
+            if(value.val=='confirm'){
+                PlayerSelf.duelConfirm=2;
+                if(PlayerSelf.enamy!=null && PlayerSelf.enamy.duelConfirm==2){
+                    var duelroom=new GameRoom(PlayerSelf,PlayerSelf.enamy);
+                    duelroom.GameInit();
+                }else if(PlayerSelf.enamy==null || PlayerSelf.enamy.duelConfirm==0){
+                    PlayerSelf.playerSocket.emit('message',{
+                        'content':'对手已离开'
+                    });
+                }else if(PlayerSelf.enamy!=null && PlayerSelf.enamy.duelConfirm==1){
+                    PlayerSelf.playerSocket.emit('message',{
+                        'content':'正在等待对手确认'
+                    });
+                }
+            }else{
+                PlayerSelf.RejectDuel();
+            }
+        }
+        if(value.name=='setBornArea'){
+            let hassetarea='';
+            switch(value.area){
+                case 'goldenarea':
+                    PlayerSelf.beginArea=GameStatic.Part_Jin;
+                    hassetarea="金";
+                break;
+                case 'woodenarea':
+                    PlayerSelf.beginArea=GameStatic.Part_Mu;
+                    hassetarea="木";
+                    break;
+                case 'waterarea':
+                    PlayerSelf.beginArea=GameStatic.Part_Shui;
+                    hassetarea="水";
+                    break;
+                case 'firearea':
+                    PlayerSelf.beginArea=GameStatic.Part_Huo;
+                    hassetarea="火";
+                    break;
+                case 'landarea':
+                    PlayerSelf.beginArea=GameStatic.Part_Tu;
+                    hassetarea="土";
+                    break;
+            }
+            socket.emit('tipalert',{
+                'content':'你的出生点已设置为'+hassetarea
+            })
         }
     });
 });
@@ -136,7 +185,36 @@ class GameRoom{
 
         ALLROOMS.push(this);
     }
-    GameInit(){}
+    GameInit(){
+        this.p1.gamePlayer=new Player();
+        this.p2.gamePlayer=new Player();
+        //先后手
+        if(randomInt(0,100)>50){
+            this.p1.playerSocket.emit('action',{
+                'name':'先后手',
+                'val':1
+            });
+            this.p2.playerSocket.emit('action',{
+                'name':'先后手',
+                'val':0
+            });
+            this.p1.gamePlayer.TurnBegin();
+        }else{
+            this.p1.playerSocket.emit('action',{
+                'name':'先后手',
+                'val':0
+            });
+            this.p2.playerSocket.emit('action',{
+                'name':'先后手',
+                'val':1
+            });
+            this.p2.gamePlayer.TurnBegin();
+        }
+        this.p1.gamePlayer.area=this.p1.beginArea;
+        this.p2.gamePlayer.area=this.p2.beginArea;
+        this.p1.SetArea();
+        this.p2.SetArea();
+    }
     GameBegin(){}
     GameUpdate(){}
     GameOver(){}
@@ -263,15 +341,41 @@ class GlobalPlayer{
         this.matching=false;//是否在匹配
         this.enamy=null;//(GlobalPlayer)正在对战的敌人
         this.playerSocket=socket_;
+        this.duelConfirm=1;
         this.gamePlayer=null;//对局玩家
-        OnlinePlayerList.set(socket_,this);
+        this.beginArea=GameStatic.Part_Jin;//出生点，默认金
+        OnlinePlayerMap.set(socket_.id,this);
+    }
+    SetArea(){
+        this.playerSocket.emit('action',{
+            'name':'setArea',
+            'area':this.gamePlayer.area
+        });
+        this.enamy.playerSocket.emit('action',{
+            'name':'enamySetArea',
+            'area':this.gamePlayer.area
+        });
     }
     MatchEnamy(enamyplayer){
         this.enamy=enamyplayer;
         this.matching=false;
+        this.playerSocket.emit('action',{
+            'name':'findenamy'
+        })
         this.playerSocket.emit('message',{
             'content':'已找到敌人:'+enamyplayer.playername
         })
+    }
+    //拒绝对战
+    RejectDuel(){
+        this.duelConfirm=0;
+        if(this.enamy!=null){
+            this.enamy.playerSocket.emit('action',{
+                'name':'enamyRejectDuel'
+            });
+            this.enamy=null;
+            this.matching=true;
+        }
     }
     OffLine(){
         if(this.enamy!=null){
@@ -280,7 +384,7 @@ class GlobalPlayer{
             });
         }
 
-        OnlinePlayerList.delete(this.playerSocket);
+        OnlinePlayerMap.delete(this.playerSocket);
     }
 }
 //对局玩家
@@ -292,11 +396,24 @@ class Player {
         this.pointShui = 0;
         this.pointHuo = 0;
         this.pointTu = 0;
+        this.area=null;
+        this.area_=null;
         this.handCardList = [];
+    }
+    get area(){
+        return this.area_;
+    }
+    set area(val){
+        if(val!=null){
+            this.area_=val;
+        }
     }
 
     getHandCardList() {
         return this.handCardList;
+    }
+    TurnBegin(){
+
     }
 }
 

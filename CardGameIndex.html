@@ -300,9 +300,9 @@
         
     </div>
     <div class="handarea">
-        <div class="card">
+        <!-- <div class="card">
             <div class="cardtitle">标题</div>
-        </div>
+        </div> -->
     </div>
     <script src="/socket.io/socket.io.js">
     </script>
@@ -331,6 +331,12 @@
             tipcontent.set(marktagname,marktagcontent+"<img src='Images/"+imgurl+".png'>");
         }
         $(function(){
+            $(".area").click(function(){
+                socket.emit('action',{
+                    'name':'setBornArea',
+                    'area':$(this).attr('id')
+                })
+            })
             $("#cardwarehouse").hide();
             $(".windowtitlebar").click(function(){
                 console.log("隐藏",$(this).attr("data-bindwindowid"));
@@ -360,7 +366,7 @@
                 })
             })
             var playerdiv="<img id='playerimg' class='playerimg' src='public/Images/player.png'>";
-            
+            var enamydiv="<img id='enamyimg' class='enamyimg' src='public/Images/enamy.png'>"
             $("#tip").hide();
             $("#gameactions").hide();
             $("div").mouseenter(function (e) {
@@ -373,7 +379,7 @@
             }).mouseleave(function(e){
                 $("#tip").hide();
             });
-            putmark("炽暗焰冢","player_goldenarea_1","炽暗焰冢","当你受到伤害时，消耗你的【金】元素用以抵挡即将到来的伤害");
+            //putmark("炽暗焰冢","player_goldenarea_1","炽暗焰冢","当你受到伤害时，消耗你的【金】元素用以抵挡即将到来的伤害");
             // putmark("铁蒺藜","enamy_goldenarea_1","铁蒺藜","【敌落】敌人受到3点伤害，损失2点木元素");
             // putmark("金属囚笼","enamy_waterarea_2","金属囚笼","【敌落】敌人在下一个移动阶段不能移动");
             // putmark("幽林静野","enamy_waterarea_3","幽林静野","当你的角色位于此区域时，+2生命");
@@ -381,6 +387,11 @@
             let movecard=false;
             let chosecardposx=-1;
             let chosecardposy=-1;
+            var jin=$("#goldenarea");
+            var mu=$("#woodenarea");
+            var shui=$("#waterarea");
+            var huo=$("#firearea");
+            var tu=$("#landarea");
             //$("#goldenarea").append(playerdiv);
             $(".card").mousedown(function(e){
                 chosecardposx=e.pageX;
@@ -394,8 +405,8 @@
             })
             $("body").mouseup(function(){
                 if(movecard){
-                       movecard=false;
-                       $("#zhishixian").hide();
+                    movecard=false;
+                    $("#zhishixian").hide();
                 }
             }).mousemove(function(e){
                 if(!movecard){
@@ -413,6 +424,47 @@
                 $("#zhishixian").show();
             });
         });
+        function setPlayerArea(areaid){
+            $("#playerimg").remove();
+            console.log("放置",areaid);
+            switch(areaid){
+                case "Jin":
+                jin.append(playerdiv);
+                break;
+                case "Mu":
+                mu.append(playerdiv);
+                break;
+                case "Shui":
+                shui.append(playerdiv);
+                break;
+                case "Huo":
+                huo.append(playerdiv);
+                break;
+                case "Tu":
+                tu.append(playerdiv);
+                break;
+            }
+        }
+        function setEnamyArea(areaid){
+            $("#enamyimg").remove();
+            switch(areaid){
+                case "Jin":
+                jin.append(enamydiv);
+                break;
+                case "Mu":
+                mu.append(enamydiv);
+                break;
+                case "Shui":
+                shui.append(enamydiv);
+                break;
+                case "Huo":
+                huo.append(enamydiv);
+                break;
+                case "Tu":
+                tu.append(enamydiv);
+                break;
+            }
+        }
         socket.on('action',function(msg){
                 console.log(msg);
                 if(msg.name=='loginstate'){
@@ -425,9 +477,43 @@
                     console.log(msg);
                     $("#playercardlist").append("<option value='"+msg.card[0].cardname+"'>"+msg.card[0].cardname+"<span class='cardcount'>x"+msg.count+"</span></option>")
                 }
+                if(msg.name=='enamyrejectduel'){
+                    console.log("对手拒绝了决斗，回到匹配队列");
+                }
+                if(msg.name=='findenamy'){
+                    if(window.confirm("已确定对手，确定开始对战吗？")){
+                        socket.emit('action',{
+                            'name':'duel',
+                            'val':'confirm'
+                        })
+                    }else{
+                        socket.emit('action',{
+                            'name':'duel',
+                            'val':'reject'
+                        })
+                        return false;
+                    }
+                }
+                if(msg.name=='先后手'){
+                    $("#gameactions").hide();
+                    if(msg.val==1){
+                        alert("你先手");
+                    }else{
+                        alert('你后手');
+                    }
+                }
+                if(msg.name=='setArea'){
+                    setPlayerArea(msg.area);
+                }
+                if(msg.name=='setEnamyArea'){
+                    setEnamyArea(msg.area);
+                }
             });
         socket.on('message',function(msg){
             console.log(msg);
+        });
+        socket.on('tipalert',function(msg){
+            alert(msg.content);
         })
     </script>
 </body>
