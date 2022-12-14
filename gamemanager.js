@@ -6,9 +6,11 @@ const http=require('http');
 const server=http.createServer(app);
 const {Server}=require('socket.io');
 const io=new Server(server);
+var SystemCardsDic= require('../Code/SystemCardList').SystemCardsDic;
+var SystemCardList=require('../Code/SystemCardList').SystemCardList;
+var GameStatic=require('../Code/GameStatic').GameStatic;
 
 var OnlinePlayerMap=new Map();
-
 var mysql=require('mysql');
 process.env.PWD=process.cwd();
 var connection=mysql.createConnection({
@@ -18,7 +20,6 @@ var connection=mysql.createConnection({
     database:'elemental',
     port:'3306'
 });
-console.log("连接数据库");
 connection.connect(function(err){
     if(err) throw err;
     console.log("连接成功");
@@ -57,7 +58,6 @@ io.on('connection',(socket)=>{
             let sql="SELECT * FROM player WHERE playername='"+accountname+"' AND playerpassword='"+accountpass+"'";
             connection.query(sql,function(err,res,fields){
                 if(err) throw err;
-                console.log(res,res.length);
                 if(res.length>0){
                     socket.emit('action',{
                         'name':'loginstate',
@@ -71,7 +71,6 @@ io.on('connection',(socket)=>{
                             return;
                         }
                         for(let j of JSON.parse(res[0].cards)){
-                            console.log("卡牌id:"+j.id+"卡牌数量:"+j.count);
                             sql="SELECT id,cardname,cardinfo,cardjson,forbidden FROM cardinfo WHERE id="+parseInt(j.id);
                             connection.query(sql,function(err,res){
                                 if(err) throw err;
@@ -116,6 +115,15 @@ io.on('connection',(socket)=>{
                     PlayerSelf.playerSocket.emit('message',{
                         'content':'对手已离开'
                     });
+                    PlayerSelf.enamy=null;
+                    PlayerSelf.matching=true;
+                    for(let i of OnlinePlayerMap){
+                        if(i[1]!=PlayerSelf && i[1].matching && i[1].enamy==null){
+                            i[1].MatchEnamy(PlayerSelf);
+                            PlayerSelf.MatchEnamy(i[1]);
+                            break;
+                        }
+                    }
                 }else if(PlayerSelf.enamy!=null && PlayerSelf.enamy.duelConfirm==1){
                     PlayerSelf.playerSocket.emit('message',{
                         'content':'正在等待对手确认'
@@ -182,12 +190,16 @@ class GameRoom{
     constructor(p1,p2){
         this.p1=p1;
         this.p2=p2;
-
+        this.battlecontroller=null;
+        
         ALLROOMS.push(this);
     }
     GameInit(){
-        this.p1.gamePlayer=new Player();
-        this.p2.gamePlayer=new Player();
+        this.p1.gamePlayer=new Player(this.p1.playerSocket);
+        this.p2.gamePlayer=new Player(this.p2.playerSocket);
+        this.p1.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢'];
+        this.p2.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢'];
+        this.battlecontroller=new MainControl(this.p1,this.p2);
         //先后手
         if(randomInt(0,100)>50){
             this.p1.playerSocket.emit('action',{
@@ -198,7 +210,7 @@ class GameRoom{
                 'name':'先后手',
                 'val':0
             });
-            this.p1.gamePlayer.TurnBegin();
+            this.battlecontroller.gameStart(this.p1.gamePlayer);
         }else{
             this.p1.playerSocket.emit('action',{
                 'name':'先后手',
@@ -208,48 +220,21 @@ class GameRoom{
                 'name':'先后手',
                 'val':1
             });
-            this.p2.gamePlayer.TurnBegin();
+            this.battlecontroller.gameStart(this.p2.gamePlayer);
         }
         this.p1.gamePlayer.area=this.p1.beginArea;
         this.p2.gamePlayer.area=this.p2.beginArea;
         this.p1.SetArea();
         this.p2.SetArea();
+        
     }
-    GameBegin(){}
     GameUpdate(){}
     GameOver(){}
 }
 class GameUtils {
-
-
 }
 
-class GameStatic {
-    //是否异步处理网络消息
-    static MessageAsync = false;
-    //玩家血量
-    static HP = 10;
-    //玩家初始手牌数
-    static HandCardLimit = 5;
-    //凝聚阶段
-    static Part_Condensation = "Condensation";
-    //移动阶段
-    static Part_Move = "Move";
-    //出牌阶段
-    static Part_PlayHand = "PlayHand";
-    //结束阶段
-    static Part_Finish = "Finish";
-    //属性-金
-    static Part_Jin = "Jin";
-    //属性-木
-    static Part_Mu = "Mu";
-    //属性-水
-    static Part_Shui = "Shui";
-    //属性-火
-    static Part_Huo = "Huo";
-    //属性-土
-    static Part_Tu = "Tu";
-}
+
 
 //网络中心
 class NetWorkCenter {
@@ -389,7 +374,7 @@ class GlobalPlayer{
 }
 //对局玩家
 class Player {
-    constructor() {
+    constructor(socket_) {
         this.HP = GameStatic.HP;
         this.pointJin = 0;
         this.pointMu = 0;
@@ -398,7 +383,9 @@ class Player {
         this.pointTu = 0;
         this.area=null;
         this.area_=null;
-        this.handCardList = [];
+        this.handCardList = new Array();
+        this.playerCardLibrary=new Array();
+        this.sock=socket_;
     }
     get area(){
         return this.area_;
@@ -433,49 +420,6 @@ class Land {
 
     getMarkList2() {
         return this.markList2;
-    }
-}
-
-//卡牌
-class Card {
-    constructor(x, property) {
-        this.name = "";
-        this.text = "";
-
-    }
-
-    //各阶段结算效果回调
-    events = {
-        //凝聚阶段
-        onCondensation: function () {
-            //TODO
-        },
-        //移动阶段
-        onMove: function () {
-            //TODO
-
-        },
-        //出牌阶段
-        onPlayHand: function () {
-            //TODO
-
-        },
-        //结束阶段
-        onFinish: function () {
-            //TODO
-
-        },
-    }
-
-
-}
-
-class Mark {
-    constructor(x, property, card) {
-        this.name = "";
-        this.text = "";
-        this.refCard = card;
-
     }
 }
 
@@ -614,7 +558,7 @@ class RoundControl {
 
 //主控制器
 class MainControl {
-    constructor() {
+    constructor(p1,p2) {
         this.websocket = null;//TODO websocket对象
         this.cardSource = [];//TODO 卡牌资源对象
         this.netWorkCenter = new NetWorkCenter(this);
@@ -626,24 +570,59 @@ class MainControl {
         this.landList.push(new Land(2, GameStatic.Part_Shui));
         this.landList.push(new Land(3, GameStatic.Part_Huo));
         this.landList.push(new Land(4, GameStatic.Part_Tu));
+        this.p1=p1;
+        this.p2=p2;
+        //当前回合玩家
+        this.roundPlayer=null;
+    }
+    //给指定玩家手牌发指定牌
+    putCard(p,card_,params){
+        if(card_){
+            p.gamePlayer.handCardList.push(card_);
+            p.gamePlayer.playerSocket.emit('action',{
+                'name':'getcard',
+                'card':JSON.stringify(card_)
+            });
+            return card_;
+        }
+        if(p.gamePlayer.playerCardLibrary.length<=0){
+            return;
+        }
+        console.log(p.gamePlayer.playerCardLibrary.length);
+        let randIndex=randomInt(0,p.gamePlayer.playerCardLibrary.length);
+        card_=new SystemCardsDic[p.gamePlayer.playerCardLibrary[randIndex]]();
+        console.log(card_);
+        p.gamePlayer.handCardList.push(card_);
+        p.playerSocket.emit('action',{
+            'name':'getcard',
+            'card':card_
+        });
+        p.gamePlayer.playerCardLibrary.splice(randIndex,1);
+        return card_;
     }
 
     //游戏开始调用
-    gameStart(){
+    gameStart(p){
         //初始化牌库
         this.cardLibrary.putCardAll(this.cardSource);
 
         //TODO 广播客户端游戏开始
         this.netWorkCenter.sendMsgAll();
         this.roundControl.nextRound();
-
+        if(p==this.p1){
+            this.roundPlayer=this.p1;
+            this.putCard(this.p2.gamePlayer);
+        }else if(p==this.p2){
+            this.roundPlayer=this.p2;
+            this.putCard(this.p1.gamePlayer);
+        }
+        this.nextRound();
     }
 
     //下个回合
     nextRound(){
         this.roundControl.nextRound();
+        this.roundPlayer=this.roundPlayer==this.p1?this.p2:this.p1;
+        this.putCard(this.roundPlayer);
     }
-
-
-
 }

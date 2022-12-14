@@ -41,7 +41,7 @@
             border: solid 1px;
             display: inline-block;
             margin: 5px;
-            
+            position: relative;
         }
         .grids{
             width: 50px;
@@ -113,12 +113,7 @@
             display: block;
             width: 100%;
             height: 100%;
-        }
-        .playerimg{
-            margin-left: -5px;
-        }
-        .enamyimg{
-            margin-left: 5px;
+            position: absolute;
         }
         .playerimg:hover{
             cursor: move;
@@ -221,6 +216,13 @@
         </div>
         
     </div>
+    <div id="playerGamePoints" class="playergamepoints">
+        <p id="jinyuansu">金元素 </p>
+        <p id="muyuansu">木元素 </p>
+        <p id="shuiyuansu">水元素 </p>
+        <p id="huoyuansu">火元素 </p>
+        <p id="tuyuansu">土元素 </p>
+    </div>
     <div id="cardwarehouse" class="cardwarehouse default-window">
         <div class="windowtitlebar" data-bindwindowid="cardwarehouse">卡组编辑</div>
         <div class="windowtoolbar">
@@ -305,9 +307,10 @@
         </div>
         
     </div>
-    <div class="handarea">
+    <div class="handarea" id="handarea">
         <!-- <div class="card">
             <div class="cardtitle">标题</div>
+            <div class="cardtext">卡牌信息</div>
         </div> -->
     </div>
     <script src="/socket.io/socket.io.js">
@@ -380,6 +383,7 @@
             }
         }
         $(function(){
+            $("#playergamepoints").hide();
             $(".area").click(function(){
                 socket.emit('action',{
                     'name':'setBornArea',
@@ -441,7 +445,8 @@
             var huo=$("#firearea");
             var tu=$("#landarea");
             //$("#goldenarea").append(playerdiv);
-            $(".card").mousedown(function(e){
+            $(".handarea").on('mousedown','.card',function(e){
+                console.log("选中卡牌");
                 chosecardposx=e.pageX;
                 chosecardposy=e.pageY;
                 $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S"+chosecardposx+" "+chosecardposy+" "+chosecardposx+" "+chosecardposy);
@@ -509,12 +514,24 @@
                     }else{
                         alert('你后手');
                     }
+                    $("#playergamepoints").show();
                 }
                 if(msg.name=='setArea'){
                     setPlayerArea(msg.area);
                 }
                 if(msg.name=='enamySetArea'){
                     setEnamyArea(msg.area);
+                }
+                if(msg.name=='syncpoints'){
+                    $("#jinyuansu").text("金元素 "+msg.Jin);
+                    $("#muyuansu").text("木元素 "+msg.Mu);
+                    $("#shuiyuansu").text("水元素 "+msg.Shui);
+                    $("#huoyuansu").text("火元素 "+msg.Huo);
+                    $("#tuyuansu").text("土元素 "+msg.Tu);
+                }
+                if(msg.name=='getcard'){
+                    console.log('获得卡牌:',msg.card);
+                    $("#handarea").append("<div class='card'><div class='cardtitle'>"+msg.card.name+"</div><div class='cardtext'>"+msg.card.text+"</div></div>");
                 }
             });
         socket.on('message',function(msg){
