@@ -133,6 +133,28 @@ io.on('connection',(socket)=>{
                 PlayerSelf.RejectDuel();
             }
         }
+        if(value.name=='next'){
+            PlayerSelf.gamePlayer.GameController.roundControl.nextPart();
+            if(PlayerSelf.gamePlayer.nowStepinRound==GameStatic.Part_Condensation){
+                PlayerSelf.gamePlayer.nowStepinRound=GameStatic.Part_Move;
+                socket.emit('action',{
+                    'name':'step',
+                    'step':'移动阶段'
+                })
+            }else if(PlayerSelf.gamePlayer.nowStepinRound==GameStatic.Part_Move){
+                PlayerSelf.gamePlayer.nowStepinRound=GameStatic.Part_PlayHand;
+                socket.emit('action',{
+                    'name':'step',
+                    'step':'出牌阶段'
+                })
+            }else if(PlayerSelf.gamePlayer.nowStepinRound==GameStatic.Part_PlayHand){
+                PlayerSelf.gamePlayer.EndTurn();
+                socket.emit('action',{
+                    'name':'step',
+                    'step':'结束阶段'
+                })
+            }
+        }
         if(value.name=='setBornArea'){
             let hassetarea='';
             switch(value.area){
@@ -210,7 +232,8 @@ class GameRoom{
                 'name':'先后手',
                 'val':0
             });
-            this.battlecontroller.gameStart(this.p1.gamePlayer);
+            console.log("第1个地方",this.p1.gamePlayer.playerCardLibrary);
+            this.battlecontroller.gameStart(this.p1);
         }else{
             this.p1.playerSocket.emit('action',{
                 'name':'先后手',
@@ -220,13 +243,18 @@ class GameRoom{
                 'name':'先后手',
                 'val':1
             });
-            this.battlecontroller.gameStart(this.p2.gamePlayer);
+            this.battlecontroller.gameStart(this.p2);
         }
         this.p1.gamePlayer.area=this.p1.beginArea;
         this.p2.gamePlayer.area=this.p2.beginArea;
         this.p1.SetArea();
         this.p2.SetArea();
-        
+        this.p1.playerSocket.emit('action',{
+            'name':'GameInit'
+        });
+        this.p2.playerSocket.emit('action',{
+            'name':'GameInit'
+        });
     }
     GameUpdate(){}
     GameOver(){}
@@ -375,18 +403,112 @@ class GlobalPlayer{
 //对局玩家
 class Player {
     constructor(socket_) {
+        this.sock=socket_;
         this.HP = GameStatic.HP;
         this.pointJin = 0;
+        this.pointJin_=0;
         this.pointMu = 0;
+        this.pointMu_=0;
         this.pointShui = 0;
+        this.pointShui_=0;
         this.pointHuo = 0;
+        this.pointHuo_=0;
         this.pointTu = 0;
+        this.pointTu_=0;
         this.area=null;
         this.area_=null;
         this.handCardList = new Array();
         this.playerCardLibrary=new Array();
-        this.sock=socket_;
+        
+        this.nowStepinRound=GameStatic.Part_Condensation;
+        this.GameController=null;
+
+        this.canCollectElement_Jin=true;//玩家是否能凝聚金元素
+        this.collectElementCount_Jin=2;//玩家在凝聚阶段能凝聚多少金元素
+        this.canCollectElement_Mu=true;//玩家是否能凝聚金元素
+        this.collectElementCount_Mu=2;//玩家在凝聚阶段能凝聚多少金元素
+        this.canCollectElement_Shui=true;//玩家是否能凝聚金元素
+        this.collectElementCount_Shui=2;//玩家在凝聚阶段能凝聚多少金元素
+        this.canCollectElement_Huo=true;//玩家是否能凝聚金元素
+        this.collectElementCount_Huo=2;//玩家在凝聚阶段能凝聚多少金元素
+        this.canCollectElement_Tu=true;//玩家是否能凝聚金元素
+        this.collectElementCount_Tu=2;//玩家在凝聚阶段能凝聚多少金元素
     }
+    CollectElement(elementtype,count){
+        if(elementtype==GameStatic.Part_Jin){
+            if(this.canCollectElement_Jin){
+                this.pointJin+=this.collectElementCount_Jin;
+            }
+        }
+        if(elementtype==GameStatic.Part_Mu){
+            if(this.canCollectElement_Mu){
+                this.pointMu+=this.collectElementCount_Mu;
+            }
+        }
+        if(elementtype==GameStatic.Part_Shui){
+            if(this.canCollectElement_Shui){
+                this.pointShui+=this.collectElementCount_Shui;
+            }
+        }
+        if(elementtype==GameStatic.Part_Huo){
+            if(this.canCollectElement_Huo){
+                this.pointHuo+=this.collectElementCount_Huo;
+            }
+        }
+        if(elementtype==GameStatic.Part_Tu){
+            if(this.canCollectElement_Tu){
+                this.pointTu+=this.collectElementCount_Tu;
+            }
+        }
+    }
+
+    SyncPlayerInfo(){
+        this.sock.emit('action',{
+            'name':'sync',
+            'Jin':this.pointJin,
+            'Mu':this.pointMu,
+            'Shui':this.pointShui,
+            'Huo':this.pointHuo,
+            'Tu':this.pointTu
+        })
+    }
+    
+    get pointJin(){
+        return this.pointJin_;
+    }
+    set pointJin(val){
+        this.pointJin_=val;
+        this.SyncPlayerInfo();
+    }
+    get pointMu(){
+        return this.pointMu_;
+    }
+    set pointMu(val){
+        this.pointMu_=val;
+        this.SyncPlayerInfo();
+    }
+    get pointShui(){
+        return this.pointShui_;
+    }
+    set pointShui(val){
+        this.pointShui_=val;
+        this.SyncPlayerInfo();
+    }
+    get pointHuo(){
+        return this.pointHuo_;
+    }
+    set pointHuo(val){
+        this.pointHuo_=val;
+        this.SyncPlayerInfo();
+    }
+    get pointTu(){
+        return this.pointTu_;
+    }
+    set pointTu(val){
+        this.pointTu_=val;
+        this.SyncPlayerInfo();
+    }
+    
     get area(){
         return this.area_;
     }
@@ -401,6 +523,9 @@ class Player {
     }
     TurnBegin(){
 
+    }
+    EndTurn(){
+        this.GameController.roundControl.nextRound();
     }
 }
 
@@ -464,6 +589,30 @@ class RoundControl {
         this.roundPart = GameStatic.Part_Condensation;
         this.roundNum++;
         this.roundPartNum = 0;
+        this.mainControl.putCard(this.mainControl.roundPlayer);
+        console.log(this.mainControl.roundPlayer==this.mainControl.p1,this.mainControl.roundPlayer==this.mainControl.p2);
+        if(this.mainControl.p1!=this.mainControl.roundPlayer){
+            this.mainControl.p2.playerSocket.emit('action',{
+                'name':'notround'
+            });
+            this.mainControl.p1.playerSocket.emit('action',{
+                'name':'roundbegin'
+            });
+            this.mainControl.p1.gamePlayer.nowStepinRound=GameStatic.Part_Condensation;
+            this.mainControl.roundPlayer=this.mainControl.p1;
+            console.log("切换玩家2");
+        }else{
+            this.mainControl.p1.playerSocket.emit('action',{
+                'name':'notround'
+            });
+            this.mainControl.p2.playerSocket.emit('action',{
+                'name':'roundbegin'
+            });
+            
+            this.mainControl.p2.gamePlayer.nowStepinRound=GameStatic.Part_Condensation;
+            this.mainControl.roundPlayer=this.mainControl.p2;
+            console.log("切换玩家1");
+        }
     }
 
     //下个阶段
@@ -501,7 +650,7 @@ class RoundControl {
                 markList2.events.onCondensation();
             }
         }
-
+        this.mainControl.roundPlayer.gamePlayer.CollectElement(this.mainControl.roundPlayer.area);
     }
 
     //移动阶段事件
@@ -553,6 +702,7 @@ class RoundControl {
                 markList2.events.onFinish();
             }
         }
+        
     }
 }
 
@@ -574,11 +724,17 @@ class MainControl {
         this.p2=p2;
         //当前回合玩家
         this.roundPlayer=null;
+        this.gameCardCount=0;
+        this.p1.gamePlayer.GameController=this;
+        this.p2.gamePlayer.GameController=this;
     }
     //给指定玩家手牌发指定牌
     putCard(p,card_,params){
+        console.log("第3个地方",p.gamePlayer.playerCardLibrary);
         if(card_){
+            this.gameCardCount++;
             p.gamePlayer.handCardList.push(card_);
+            card_.cid=this.gameCardCount;
             p.gamePlayer.playerSocket.emit('action',{
                 'name':'getcard',
                 'card':JSON.stringify(card_)
@@ -588,10 +744,10 @@ class MainControl {
         if(p.gamePlayer.playerCardLibrary.length<=0){
             return;
         }
-        console.log(p.gamePlayer.playerCardLibrary.length);
+        this.gameCardCount++;
         let randIndex=randomInt(0,p.gamePlayer.playerCardLibrary.length);
         card_=new SystemCardsDic[p.gamePlayer.playerCardLibrary[randIndex]]();
-        console.log(card_);
+        card_.cid=this.gameCardCount;
         p.gamePlayer.handCardList.push(card_);
         p.playerSocket.emit('action',{
             'name':'getcard',
@@ -603,26 +759,20 @@ class MainControl {
 
     //游戏开始调用
     gameStart(p){
+        console.log("第2个地方",p.gamePlayer.playerCardLibrary);
         //初始化牌库
         this.cardLibrary.putCardAll(this.cardSource);
 
         //TODO 广播客户端游戏开始
         this.netWorkCenter.sendMsgAll();
-        this.roundControl.nextRound();
+        
         if(p==this.p1){
             this.roundPlayer=this.p1;
-            this.putCard(this.p2.gamePlayer);
+            this.putCard(this.p1);
         }else if(p==this.p2){
             this.roundPlayer=this.p2;
-            this.putCard(this.p1.gamePlayer);
+            this.putCard(this.p2);
         }
-        this.nextRound();
-    }
-
-    //下个回合
-    nextRound(){
         this.roundControl.nextRound();
-        this.roundPlayer=this.roundPlayer==this.p1?this.p2:this.p1;
-        this.putCard(this.roundPlayer);
     }
 }

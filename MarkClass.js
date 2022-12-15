@@ -3,7 +3,7 @@ exports.Mark= class Mark {
         this.name = name;
         this.text = text;
         this.refCard = card;
-
+        this.controllPlayer=null;
     }
     events = {
         //凝聚阶段
