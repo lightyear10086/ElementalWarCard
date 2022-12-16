@@ -156,6 +156,31 @@ io.on('connection',(socket)=>{
             }
         }
         if(value.name=='setBornArea'){
+            if(PlayerSelf.gamePlayer!=null){
+                console.log('玩家阶段:',PlayerSelf.gamePlayer.nowStepinRound);
+                if(PlayerSelf.gamePlayer.nowStepinRound==GameStatic.Part_Move){
+                    switch(value.area){
+                        case 'goldenarea':
+                            PlayerSelf.gamePlayer.area=GameStatic.Part_Jin;
+                        break;
+                        case 'woodenarea':
+                            PlayerSelf.gamePlayer.area=GameStatic.Part_Mu;
+                            break;
+                        case 'waterarea':
+                            PlayerSelf.gamePlayer.area=GameStatic.Part_Shui;
+                            break;
+                        case 'firearea':
+                            PlayerSelf.gamePlayer.area=GameStatic.Part_Huo;
+                            break;
+                        case 'landarea':
+                            PlayerSelf.gamePlayer.area=GameStatic.Part_Tu;
+                            break;
+                    }
+                    PlayerSelf.SetArea();
+                    return;
+                }
+            }
+
             let hassetarea='';
             switch(value.area){
                 case 'goldenarea':
