@@ -7,7 +7,7 @@ exports.m_zhouchaoganghua= class m_zhouchaoganghua extends Mark{
         //凝聚阶段
         onCondensation: function () {
             //TODO
-            
+            this.controllPlayer.pointJin++;
         },
         //移动阶段
         onMove: function () {
