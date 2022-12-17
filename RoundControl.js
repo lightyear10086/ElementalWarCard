@@ -77,10 +77,11 @@ exports.RoundControl=class RoundControl {
             let markList1 = land.getMarkList1();
             let markList2 = land.getMarkList2();
             for(let j=0;j<markList1.length;j++){
-                markList1.events.onCondensation();
+                console.log("列表项==========",markList1[j]);
+                markList1[j].events.onCondensation(markList1[j]);
             }
             for(let j=0;j<markList2.length;j++){
-                markList2.events.onCondensation();
+                markList2[j].events.onCondensation(markList2[j]);
             }
         }
         this.mainControl.roundPlayer.gamePlayer.CollectElement(this.mainControl.roundPlayer.gamePlayer.area);
@@ -95,10 +96,10 @@ exports.RoundControl=class RoundControl {
             let markList1 = land.getMarkList1();
             let markList2 = land.getMarkList2();
             for(let j=0;j<markList1.length;j++){
-                markList1.events.onMove();
+                markList1[j].events.onMove();
             }
             for(let j=0;j<markList2.length;j++){
-                markList2.events.onMove();
+                markList2[j].events.onMove();
             }
         }
     }
@@ -112,10 +113,10 @@ exports.RoundControl=class RoundControl {
             let markList1 = land.getMarkList1();
             let markList2 = land.getMarkList2();
             for(let j=0;j<markList1.length;j++){
-                markList1.events.onPlayHand();
+                markList1[j].events.onPlayHand();
             }
             for(let j=0;j<markList2.length;j++){
-                markList2.events.onPlayHand();
+                markList2[j].events.onPlayHand();
             }
         }
     }
@@ -129,10 +130,10 @@ exports.RoundControl=class RoundControl {
             let markList1 = land.getMarkList1();
             let markList2 = land.getMarkList2();
             for(let j=0;j<markList1.length;j++){
-                markList1.events.onFinish();
+                markList1[j].events.onFinish();
             }
             for(let j=0;j<markList2.length;j++){
-                markList2.events.onFinish();
+                markList2[j].events.onFinish();
             }
         }
         

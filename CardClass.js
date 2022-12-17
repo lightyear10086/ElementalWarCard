@@ -5,6 +5,7 @@ exports.Card= class Card {
         this.name = "";
         this.text = "";
         this.mark=null;
+        this.maincontroll=null;
         this.cost={'x':costx,'Jin':cost_jin,'Mu':cost_mu,'Shui':cost_shui,'Huo':cost_huo,'Tu':cost_tu}
     }
 

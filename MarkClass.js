@@ -6,6 +6,9 @@ exports.Mark= class Mark {
         this.controllPlayer=null;
         this.maincontroll=null;
     }
+    setController(p_){
+        this.controllPlayer=p_;
+    }
     events = {
         //凝聚阶段
         onCondensation: function () {
@@ -26,5 +29,8 @@ exports.Mark= class Mark {
             //TODO
 
         },
+        onPlayerMove:function(self,moveplayer){
+
+        }
     }
 }

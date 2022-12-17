@@ -111,11 +111,16 @@
         .btn:active{
             background-color: black;
         }
-        .markimg,.playerimg,.enamyimg{
+        .playerimg,.enamyimg{
             display: block;
             width: 100%;
             height: 100%;
             position: absolute;
+        }
+        .markimg{
+            display: block;
+            width: 100%;
+            height: 100%;
         }
         .playerimg{
             left: -5px;
@@ -273,30 +278,30 @@
         <div id="map" class="map">
             <div id="enamygrids" class="enamygrids">
                 <div id="enamy_goldenareagrids" class="grids goldenareagrids">
-                    <div id="enamy_goldenarea_1" class="grid" data-areatag="空领地">
+                    <div id="enamy_goldenarea_3" class="grid" data-areatag="空领地">
                     </div>
                     <div id="enamy_goldenarea_2" class="grid" data-areatag="空领地"></div>
-                    <div id="enamy_goldenarea_3" class="grid" data-areatag="空领地"></div>
+                    <div id="enamy_goldenarea_1" class="grid" data-areatag="空领地"></div>
                 </div>
                 <div id="enamy_woodenareagrids" class="grids woodenareagrids">
-                    <div id="enamy_woodenarea_1" class="grid" data-areatag="空领地"></div>
-                    <div id="enamy_woodenarea_2" class="grid" data-areatag="空领地"></div>
                     <div id="enamy_woodenarea_3" class="grid" data-areatag="空领地"></div>
+                    <div id="enamy_woodenarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="enamy_woodenarea_1" class="grid" data-areatag="空领地"></div>
                 </div>
                 <div id="enamy_waterareagrids" class="grids waterareagrids">
-                    <div id="enamy_waterarea_1" class="grid" data-areatag="空领地"></div>
-                    <div id="enamy_waterarea_2" class="grid" data-areatag="空领地"></div>
                     <div id="enamy_waterarea_3" class="grid" data-areatag="空领地"></div>
+                    <div id="enamy_waterarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="enamy_waterarea_1" class="grid" data-areatag="空领地"></div>
                 </div>
                 <div id="enamy_fireareagrids" class="grids fireareagrids">
-                    <div id="enamy_firearea_1" class="grid" data-areatag="空领地"></div>
-                    <div id="enamy_firearea_2" class="grid" data-areatag="空领地"></div>
                     <div id="enamy_firearea_3" class="grid" data-areatag="空领地"></div>
+                    <div id="enamy_firearea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="enamy_firearea_1" class="grid" data-areatag="空领地"></div>
                 </div>
                 <div id="enamy_landareagrids" class="grids landareagrids">
-                    <div id="enamy_landarea_1" class="grid" data-areatag="空领地"></div>
-                    <div id="enamy_landarea_2" class="grid" data-areatag="空领地"></div>
                     <div id="enamy_landarea_3" class="grid" data-areatag="空领地"></div>
+                    <div id="enamy_landarea_2" class="grid" data-areatag="空领地"></div>
+                    <div id="enamy_landarea_1" class="grid" data-areatag="空领地"></div>
                 </div>
             </div>
             <div id="goldenarea" class="area goldenarea" data-areatag="金元素地">金</div>
@@ -609,6 +614,10 @@
                 }
                 if(msg.name=='usecardfromhand'){
                     $("#cid_"+msg.card).remove();
+                }
+                if(msg.name=='putmark'){
+                    let mark_=msg.mark;
+                    putmark(mark_.name,msg.pos,mark_.name,mark_.text);
                 }
             });
         socket.on('message',function(msg){

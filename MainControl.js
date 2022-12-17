@@ -29,6 +29,145 @@ class MainControl {
         this.p1.gamePlayer.GameController=this;
         this.p2.gamePlayer.GameController=this;
     }
+    putMarkToLand(player_,landtype_,mark_){
+        mark_.setController(player_);
+        mark_.maincontroll=this;
+        if(landtype_==GameStatic.Part_Jin){
+            if(player_==this.p1.gamePlayer){
+                this.landList[0].markList1.push(mark_);
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_goldenarea_'+this.landList[0].markList1.length
+                });
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_goldenarea_'+this.landList[0].markList1.length
+                });
+            }else if(player_==this.p2.gamePlayer){
+                this.landList[0].markList2.push(mark_);
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_goldenarea_'+this.landList[0].markList2.length
+                });
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_goldenarea_'+this.landList[0].markList2.length
+                });
+            }
+        }
+        if(landtype_==GameStatic.Part_Mu){
+            if(player_==this.p1.gamePlayer){
+                this.landList[1].markList1.push(mark_);
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_woodenarea_'+this.landList[1].markList1.length
+                });
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_woodenarea_'+this.landList[1].markList1.length
+                });
+            }else if(player_==this.p2.gamePlayer){
+                this.landList[1].markList2.push(mark_);
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_woodenarea_'+this.landList[1].markList2.length
+                });
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_woodenarea_'+this.landList[1].markList2.length
+                });
+            }
+        }
+        if(landtype_==GameStatic.Part_Shui){
+            if(player_==this.p1.gamePlayer){
+                this.landList[2].markList1.push(mark_);
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_waterarea_'+this.landList[2].markList1.length
+                });
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_waterarea_'+this.landList[2].markList1.length
+                });
+            }else if(player_==this.p2.gamePlayer){
+                this.landList[2].markList2.push(mark_);
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_waterarea_'+this.landList[2].markList2.length
+                });
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_waterarea_'+this.landList[2].markList2.length
+                });
+            }
+        }
+        if(landtype_==GameStatic.Part_Huo){
+            if(player_==this.p1.gamePlayer){
+                this.landList[3].markList1.push(mark_);
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_firearea_'+this.landList[3].markList1.length
+                });
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_firearea_'+this.landList[3].markList1.length
+                });
+            }else if(player_==this.p2.gamePlayer){
+                this.landList[3].markList2.push(mark_);
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_firearea_'+this.landList[3].markList2.length
+                });
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_firearea_'+this.landList[3].markList2.length
+                });
+            }
+        }
+        if(landtype_==GameStatic.Part_Tu){
+            if(player_==this.p1.gamePlayer){
+                this.landList[4].markList1.push(mark_);
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_landarea_'+this.landList[4].markList1.length
+                });
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_landarea_'+this.landList[4].markList1.length
+                });
+            }else if(player_==this.p2.gamePlayer){
+                this.landList[4].markList2.push(mark_);
+                this.p2.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'player_landarea_'+this.landList[4].markList2.length
+                });
+                this.p1.playerSocket.emit('action',{
+                    'name':'putmark',
+                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'pos':'enamy_landarea_'+this.landList[4].markList2.length
+                });
+            }
+        }
+    }
     //给指定玩家手牌发指定牌
     putCard(p,card_,params){
         if(card_){
@@ -46,15 +185,16 @@ class MainControl {
         }
         this.gameCardCount++;
         let randIndex=randomInt(0,p.gamePlayer.playerCardLibrary.length);
-        card_=new SystemCardsDic[p.gamePlayer.playerCardLibrary[randIndex]]();
-        card_.cid=this.gameCardCount;
-        p.gamePlayer.handCardList.push(card_);
+        let card__=new SystemCardsDic[p.gamePlayer.playerCardLibrary[randIndex]]();
+        card__.cid=this.gameCardCount;
+        p.gamePlayer.handCardList.push(card__);
         p.playerSocket.emit('action',{
             'name':'getcard',
-            'card':card_
+            'card':card__
         });
         p.gamePlayer.playerCardLibrary.splice(randIndex,1);
-        return card_;
+        card__.maincontrol=this;
+        return card__;
     }
 
     //游戏开始调用

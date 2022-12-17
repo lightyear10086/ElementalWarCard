@@ -19,6 +19,7 @@ exports.Player= class Player {
         this.area_=null;
         this.handCardList = new Array();
         this.playerCardLibrary=new Array();
+        this.enamy=null;
         
         this.nowStepinRound=GameStatic.Part_Condensation;
         this.GameController=null;
@@ -34,7 +35,7 @@ exports.Player= class Player {
         this.canCollectElement_Tu=true;//玩家是否能凝聚金元素
         this.collectElementCount_Tu=2;//玩家在凝聚阶段能凝聚多少金元素
     }
-    UseCardFromHand(card_){
+    UseCardFromHand(card_,aimpos){
         if(this.handCardList.indexOf(card_)<0){
             console.log("返回");
             return;
@@ -49,9 +50,31 @@ exports.Player= class Player {
                 'name':'usecardfromhand',
                 'card':card_.cid
             });
-            console.log("玩家手牌",this.handCardList);
+            console.log("玩家手牌",this.handCardList.length);
             this.handCardList.splice(this.handCardList.indexOf(card_),1);
-            console.log("玩家剩余手牌",this.handCardList);
+            console.log("玩家剩余手牌",this.handCardList.length);
+
+            if(this.GameController!=null && card_.mark!=null){
+                let landtype_=null;
+                switch(aimpos.split('_')[1].split('area')[0]){
+                    case "golden":
+                        landtype_=GameStatic.Part_Jin;
+                        break;
+                    case "wooden":
+                        landtype_=GameStatic.Part_Mu;
+                        break;
+                    case "water":
+                        landtype_=GameStatic.Part_Shui;
+                        break;
+                    case "fire":
+                        landtype_=GameStatic.Part_Huo;
+                        break;
+                    case "land":
+                        landtype_=GameStatic.Part_Tu;
+                        break;
+                }
+                this.GameController.putMarkToLand(this,landtype_,card_.mark);
+            }
             return true;
         }
         console.log("返回2");
