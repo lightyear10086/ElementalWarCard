@@ -9,6 +9,7 @@ const io=new Server(server);
 var SystemCardsDic= require('../Code/SystemCardList').SystemCardsDic;
 var SystemCardList=require('../Code/SystemCardList').SystemCardList;
 var GameStatic=require('../Code/GameStatic').GameStatic;
+var Player=require('../Code/PlayerClass').Player;
 
 var OnlinePlayerMap=new Map();
 var mysql=require('mysql');
@@ -148,11 +149,12 @@ io.on('connection',(socket)=>{
                     'step':'出牌阶段'
                 })
             }else if(PlayerSelf.gamePlayer.nowStepinRound==GameStatic.Part_PlayHand){
-                PlayerSelf.gamePlayer.EndTurn();
+                
                 socket.emit('action',{
                     'name':'step',
                     'step':'结束阶段'
-                })
+                });
+                PlayerSelf.gamePlayer.EndTurn();
             }
         }
         if(value.name=='setBornArea'){
@@ -207,6 +209,23 @@ io.on('connection',(socket)=>{
             socket.emit('tipalert',{
                 'content':'你的出生点已设置为'+hassetarea
             })
+        }
+        if(value.name=='chosedcard'){
+            console.log("玩家选中了卡牌",value.card);
+            let chosedcard= PlayerSelf.gamePlayer.handCardList.find((currentval,index)=>{
+                return value.card== "cid_"+currentval.cid;
+            });
+            
+        }
+        if(value.name=='usecard'){
+            console.log("玩家使用卡牌",value.card);
+            let card_=PlayerSelf.gamePlayer.handCardList.find((cur,index)=>{
+                return value.card=="cid_"+cur.cid;
+            });
+            if(card_!=null){
+                PlayerSelf.gamePlayer.UseCardFromHand(card_);
+            }
+            
         }
     });
 });
@@ -425,134 +444,135 @@ class GlobalPlayer{
         OnlinePlayerMap.delete(this.playerSocket);
     }
 }
-//对局玩家
-class Player {
-    constructor(socket_) {
-        this.sock=socket_;
-        this.HP = GameStatic.HP;
-        this.pointJin = 0;
-        this.pointJin_=0;
-        this.pointMu = 0;
-        this.pointMu_=0;
-        this.pointShui = 0;
-        this.pointShui_=0;
-        this.pointHuo = 0;
-        this.pointHuo_=0;
-        this.pointTu = 0;
-        this.pointTu_=0;
-        this.area=null;
-        this.area_=null;
-        this.handCardList = new Array();
-        this.playerCardLibrary=new Array();
+// //对局玩家
+// class Player {
+//     constructor(socket_) {
+//         this.sock=socket_;
+//         this.HP = GameStatic.HP;
+//         this.pointJin = 0;
+//         this.pointJin_=0;
+//         this.pointMu = 0;
+//         this.pointMu_=0;
+//         this.pointShui = 0;
+//         this.pointShui_=0;
+//         this.pointHuo = 0;
+//         this.pointHuo_=0;
+//         this.pointTu = 0;
+//         this.pointTu_=0;
+//         this.area=null;
+//         this.area_=null;
+//         this.handCardList = new Array();
+//         this.playerCardLibrary=new Array();
         
-        this.nowStepinRound=GameStatic.Part_Condensation;
-        this.GameController=null;
+//         this.nowStepinRound=GameStatic.Part_Condensation;
+//         this.GameController=null;
 
-        this.canCollectElement_Jin=true;//玩家是否能凝聚金元素
-        this.collectElementCount_Jin=2;//玩家在凝聚阶段能凝聚多少金元素
-        this.canCollectElement_Mu=true;//玩家是否能凝聚金元素
-        this.collectElementCount_Mu=2;//玩家在凝聚阶段能凝聚多少金元素
-        this.canCollectElement_Shui=true;//玩家是否能凝聚金元素
-        this.collectElementCount_Shui=2;//玩家在凝聚阶段能凝聚多少金元素
-        this.canCollectElement_Huo=true;//玩家是否能凝聚金元素
-        this.collectElementCount_Huo=2;//玩家在凝聚阶段能凝聚多少金元素
-        this.canCollectElement_Tu=true;//玩家是否能凝聚金元素
-        this.collectElementCount_Tu=2;//玩家在凝聚阶段能凝聚多少金元素
-    }
-    CollectElement(elementtype,count){
-        if(elementtype==GameStatic.Part_Jin){
-            if(this.canCollectElement_Jin){
-                this.pointJin+=this.collectElementCount_Jin;
-            }
-        }
-        if(elementtype==GameStatic.Part_Mu){
-            if(this.canCollectElement_Mu){
-                this.pointMu+=this.collectElementCount_Mu;
-            }
-        }
-        if(elementtype==GameStatic.Part_Shui){
-            if(this.canCollectElement_Shui){
-                this.pointShui+=this.collectElementCount_Shui;
-            }
-        }
-        if(elementtype==GameStatic.Part_Huo){
-            if(this.canCollectElement_Huo){
-                this.pointHuo+=this.collectElementCount_Huo;
-            }
-        }
-        if(elementtype==GameStatic.Part_Tu){
-            if(this.canCollectElement_Tu){
-                this.pointTu+=this.collectElementCount_Tu;
-            }
-        }
-    }
+//         this.canCollectElement_Jin=true;//玩家是否能凝聚金元素
+//         this.collectElementCount_Jin=2;//玩家在凝聚阶段能凝聚多少金元素
+//         this.canCollectElement_Mu=true;//玩家是否能凝聚金元素
+//         this.collectElementCount_Mu=2;//玩家在凝聚阶段能凝聚多少金元素
+//         this.canCollectElement_Shui=true;//玩家是否能凝聚金元素
+//         this.collectElementCount_Shui=2;//玩家在凝聚阶段能凝聚多少金元素
+//         this.canCollectElement_Huo=true;//玩家是否能凝聚金元素
+//         this.collectElementCount_Huo=2;//玩家在凝聚阶段能凝聚多少金元素
+//         this.canCollectElement_Tu=true;//玩家是否能凝聚金元素
+//         this.collectElementCount_Tu=2;//玩家在凝聚阶段能凝聚多少金元素
+//     }
+//     CollectElement(elementtype,count){
+//         console.log("玩家位于",elementtype,GameStatic.Part_Jin);
+//         if(elementtype==GameStatic.Part_Jin){
+//             if(this.canCollectElement_Jin){
+//                 this.pointJin+=this.collectElementCount_Jin;
+//             }
+//         }
+//         if(elementtype==GameStatic.Part_Mu){
+//             if(this.canCollectElement_Mu){
+//                 this.pointMu+=this.collectElementCount_Mu;
+//             }
+//         }
+//         if(elementtype==GameStatic.Part_Shui){
+//             if(this.canCollectElement_Shui){
+//                 this.pointShui+=this.collectElementCount_Shui;
+//             }
+//         }
+//         if(elementtype==GameStatic.Part_Huo){
+//             if(this.canCollectElement_Huo){
+//                 this.pointHuo+=this.collectElementCount_Huo;
+//             }
+//         }
+//         if(elementtype==GameStatic.Part_Tu){
+//             if(this.canCollectElement_Tu){
+//                 this.pointTu+=this.collectElementCount_Tu;
+//             }
+//         }
+//     }
 
-    SyncPlayerInfo(){
-        this.sock.emit('action',{
-            'name':'sync',
-            'Jin':this.pointJin,
-            'Mu':this.pointMu,
-            'Shui':this.pointShui,
-            'Huo':this.pointHuo,
-            'Tu':this.pointTu
-        })
-    }
+//     SyncPlayerInfo(){
+//         this.sock.emit('action',{
+//             'name':'sync',
+//             'Jin':this.pointJin,
+//             'Mu':this.pointMu,
+//             'Shui':this.pointShui,
+//             'Huo':this.pointHuo,
+//             'Tu':this.pointTu
+//         })
+//     }
     
-    get pointJin(){
-        return this.pointJin_;
-    }
-    set pointJin(val){
-        this.pointJin_=val;
-        this.SyncPlayerInfo();
-    }
-    get pointMu(){
-        return this.pointMu_;
-    }
-    set pointMu(val){
-        this.pointMu_=val;
-        this.SyncPlayerInfo();
-    }
-    get pointShui(){
-        return this.pointShui_;
-    }
-    set pointShui(val){
-        this.pointShui_=val;
-        this.SyncPlayerInfo();
-    }
-    get pointHuo(){
-        return this.pointHuo_;
-    }
-    set pointHuo(val){
-        this.pointHuo_=val;
-        this.SyncPlayerInfo();
-    }
-    get pointTu(){
-        return this.pointTu_;
-    }
-    set pointTu(val){
-        this.pointTu_=val;
-        this.SyncPlayerInfo();
-    }
+//     get pointJin(){
+//         return this.pointJin_;
+//     }
+//     set pointJin(val){
+//         this.pointJin_=val;
+//         this.SyncPlayerInfo();
+//     }
+//     get pointMu(){
+//         return this.pointMu_;
+//     }
+//     set pointMu(val){
+//         this.pointMu_=val;
+//         this.SyncPlayerInfo();
+//     }
+//     get pointShui(){
+//         return this.pointShui_;
+//     }
+//     set pointShui(val){
+//         this.pointShui_=val;
+//         this.SyncPlayerInfo();
+//     }
+//     get pointHuo(){
+//         return this.pointHuo_;
+//     }
+//     set pointHuo(val){
+//         this.pointHuo_=val;
+//         this.SyncPlayerInfo();
+//     }
+//     get pointTu(){
+//         return this.pointTu_;
+//     }
+//     set pointTu(val){
+//         this.pointTu_=val;
+//         this.SyncPlayerInfo();
+//     }
     
-    get area(){
-        return this.area_;
-    }
-    set area(val){
-        if(val!=null){
-            this.area_=val;
-        }
-    }
+//     get area(){
+//         return this.area_;
+//     }
+//     set area(val){
+//         if(val!=null){
+//             this.area_=val;
+//         }
+//     }
 
-    getHandCardList() {
-        return this.handCardList;
-    }
-    TurnBegin(){
+//     getHandCardList() {
+//         return this.handCardList;
+//     }
+//     TurnBegin(){
 
-    }
-    EndTurn(){
-        this.GameController.roundControl.nextRound();
-    }
-}
+//     }
+//     EndTurn(){
+//         this.GameController.roundControl.nextRound();
+//     }
+// }
 
 //地块
 class Land {
@@ -614,8 +634,18 @@ class RoundControl {
         this.roundPart = GameStatic.Part_Condensation;
         this.roundNum++;
         this.roundPartNum = 0;
-        this.mainControl.putCard(this.mainControl.roundPlayer);
-        console.log(this.mainControl.roundPlayer==this.mainControl.p1,this.mainControl.roundPlayer==this.mainControl.p2);
+        
+        if(this.roundNum==1){
+            this.mainControl.roundPlayer.playerSocket.emit('action',{
+                'name':'roundbegin'
+            });
+            this.mainControl.putCard(this.mainControl.roundPlayer);
+            this.mainControl.roundPlayer.enamy.playerSocket.emit('action',{
+                'name':'notround'
+            });
+            this.mainControl.roundPlayer.nowStepinRound=GameStatic.Part_Condensation;
+            return;
+        }
         if(this.mainControl.p1!=this.mainControl.roundPlayer){
             this.mainControl.p2.playerSocket.emit('action',{
                 'name':'notround'
@@ -638,6 +668,7 @@ class RoundControl {
             this.mainControl.roundPlayer=this.mainControl.p2;
             console.log("切换玩家1");
         }
+        this.mainControl.putCard(this.mainControl.roundPlayer);
     }
 
     //下个阶段
@@ -675,7 +706,7 @@ class RoundControl {
                 markList2.events.onCondensation();
             }
         }
-        this.mainControl.roundPlayer.gamePlayer.CollectElement(this.mainControl.roundPlayer.area);
+        this.mainControl.roundPlayer.gamePlayer.CollectElement(this.mainControl.roundPlayer.gamePlayer.area);
     }
 
     //移动阶段事件
@@ -793,10 +824,8 @@ class MainControl {
         
         if(p==this.p1){
             this.roundPlayer=this.p1;
-            this.putCard(this.p1);
         }else if(p==this.p2){
             this.roundPlayer=this.p2;
-            this.putCard(this.p2);
         }
         this.roundControl.nextRound();
     }

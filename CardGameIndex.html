@@ -18,7 +18,7 @@
             justify-content: center;
             align-items: center;
         }
-        .leftUI,.gameactions{
+        .leftUI,.gameactions,.playergamepoints{
             justify-content: left;
             float: left;
             margin-right: -50%;
@@ -26,6 +26,7 @@
             background-color: rgb(114, 114, 212);
             width: 400px;
             height: 200px;
+            float:left;
         }
         .map{
             margin: auto;
@@ -198,6 +199,16 @@
         .cardcount{
             float: right;
         }
+        .points{
+            float: left;
+        }
+        .otheraction{
+            float: right;
+        }
+        .alert-btn{
+            color: red;
+            background-color: chartreuse;
+        }
     </style>
 </head>
 <body>
@@ -224,14 +235,20 @@
         
     </div>
     <div id="playerGamePoints" class="playergamepoints">
-        <p id="jinyuansu">金元素 </p>
-        <p id="muyuansu">木元素 </p>
-        <p id="shuiyuansu">水元素 </p>
-        <p id="huoyuansu">火元素 </p>
-        <p id="tuyuansu">土元素 </p>
-        <p id="hp">生命值</p>
-        <div id="steptext"></div>
-        <div class="btn default-btn" id="nextstep">下一阶段</div>
+        <div class="points">
+            <p id="jinyuansu">金元素 </p>
+            <p id="muyuansu">木元素 </p>
+            <p id="shuiyuansu">水元素 </p>
+            <p id="huoyuansu">火元素 </p>
+            <p id="tuyuansu">土元素 </p>
+        </div>
+        <div id="otheraction" class="otheraction">
+            <p id="hp">生命值</p>
+            <div id="steptext"></div>
+            <div class="btn default-btn" id="nextstep">下一阶段</div>
+            <div class="btn alert-btn" id="surrender">投降</div>
+        </div>
+        
     </div>
     <div id="cardwarehouse" class="cardwarehouse default-window">
         <div class="windowtitlebar" data-bindwindowid="cardwarehouse">卡组编辑</div>
@@ -393,6 +410,14 @@
             }
         }
         $(function(){
+            $(".grid").mouseup(function(){
+                console.log("玩家准备行动的卡牌:",chosedcardid);
+                socket.emit('action',{
+                    'name':'usecard',
+                    'card':chosedcardid,
+                    'grid':$(this).attr('id')
+                })
+            });
             $("#nextstep").click(function(){
                 socket.emit('action',{
                     'name':'next'
@@ -459,6 +484,8 @@
             var shui=$("#waterarea");
             var huo=$("#firearea");
             var tu=$("#landarea");
+
+            var chosedcardid="";
             //$("#goldenarea").append(playerdiv);
             $(".handarea").on('mousedown','.card',function(e){
                 console.log("选中卡牌");
@@ -467,14 +494,21 @@
                 $("#zhishixian").attr("d","M"+chosecardposx+" "+chosecardposy+" S"+chosecardposx+" "+chosecardposy+" "+chosecardposx+" "+chosecardposy);
                 $("#zhishixian").show();
                 movecard=true;
+                socket.emit('action',{
+                    'name':'chosedcard',
+                    'card':$(this).attr("id")
+                });
+                chosedcardid=$(this).attr("id");
             }).mouseup(function(){
                 movecard=false;
                 $("#zhishixian").hide();
+                chosedcardid="";
             })
             $("body").mouseup(function(){
                 if(movecard){
                     movecard=false;
                     $("#zhishixian").hide();
+                    chosedcardid="";
                 }
             }).mousemove(function(e){
                 if(!movecard){
@@ -557,6 +591,7 @@
                     $("#shuiyuansu").text('水元素 '+msg.Shui);
                     $("#huoyuansu").text('火元素 '+msg.Huo);
                     $("#tuyuansu").text('土元素 '+msg.Tu);
+                    $("#hp").text("生命值 "+msg.HP);
                 }
                 if(msg.name=='step'){
                     $("#steptext").text(msg.step);
@@ -566,6 +601,14 @@
                 }
                 if(msg.name=='roundbegin'){
                     $("#nextstep").show();
+                    $("#steptext").text("回合开始");
+                }
+                if(msg.name=='notround'){
+                    console.log("不是你的回合");
+                    $("#steptext").text("等待对手");
+                }
+                if(msg.name=='usecardfromhand'){
+                    $("#cid_"+msg.card).remove();
                 }
             });
         socket.on('message',function(msg){
