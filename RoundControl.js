@@ -10,6 +10,9 @@ exports.RoundControl=class RoundControl {
 
     //下个回合
     nextRound(){
+        if(this.mainControl.gameover){
+            return;
+        }
         this.roundPart = GameStatic.Part_Condensation;
         this.roundNum++;
         this.roundPartNum = 0;
@@ -46,10 +49,14 @@ exports.RoundControl=class RoundControl {
             this.mainControl.roundPlayer=this.mainControl.p2;
         }
         this.mainControl.putCard(this.mainControl.roundPlayer);
+        this.mainControl.roundPlayer.gamePlayer.moveTimes=1;
     }
 
     //下个阶段
     nextPart(){
+        if(this.mainControl.gameover){
+            return;
+        }
         this.roundPartNum++;
         if(this.roundPartNum == 1){
             this.roundPart = GameStatic.Part_Condensation;
@@ -70,6 +77,9 @@ exports.RoundControl=class RoundControl {
 
     //凝聚阶段事件
     dealPartCondensationEvent(){
+        if(this.mainControl.gameover){
+            return;
+        }
         //触发所有卡牌标记的事件
         const landList = this.mainControl.landList;
         for(let i=0;i<landList.length;i++){
@@ -77,7 +87,6 @@ exports.RoundControl=class RoundControl {
             let markList1 = land.getMarkList1();
             let markList2 = land.getMarkList2();
             for(let j=0;j<markList1.length;j++){
-                console.log("列表项==========",markList1[j]);
                 markList1[j].events.onCondensation(markList1[j]);
             }
             for(let j=0;j<markList2.length;j++){
@@ -89,6 +98,9 @@ exports.RoundControl=class RoundControl {
 
     //移动阶段事件
     dealPartMoveEvent(){
+        if(this.mainControl.gameover){
+            return;
+        }
         //触发所有卡牌标记的事件
         const landList = this.mainControl.landList;
         for(let i=0;i<landList.length;i++){
@@ -103,9 +115,29 @@ exports.RoundControl=class RoundControl {
             }
         }
     }
+    //玩家角色移动事件
+    dealPartPlayerMoveEvent(player_,startarea_,endarea_){
+        if(this.mainControl.gameover){
+            return;
+        }
+        const landList=this.mainControl.landList;
+        for(let i of landList){
+            let markList1=i.getMarkList1();
+            let markList2=i.getMarkList2();
+            for(let j of markList1){
+                j.events.onPlayerMove(j,player_,startarea_,endarea_);
+            }
+            for(let j of markList2){
+                j.events.onPlayerMove(j,player_,startarea_,endarea_);
+            }
+        }
+    }
 
     //出牌阶段事件
     dealPartPlayHandEvent(){
+        if(this.mainControl.gameover){
+            return;
+        }
         //触发所有卡牌标记的事件
         const landList = this.mainControl.landList;
         for(let i=0;i<landList.length;i++){
@@ -123,6 +155,9 @@ exports.RoundControl=class RoundControl {
 
     //结束阶段事件
     dealPartFinishEvent(){
+        if(this.mainControl.gameover){
+            return;
+        }
         //触发所有卡牌标记的事件
         const landList = this.mainControl.landList;
         for(let i=0;i<landList.length;i++){

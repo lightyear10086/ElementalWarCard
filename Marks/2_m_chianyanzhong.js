@@ -24,7 +24,7 @@ exports.m_chianyanzhong= class m_chianyanzhong extends Mark{
             //TODO
 
         },
-        onPlayerMove:function(self,moveplayer){
+        onPlayerMove:function(self,moveplayer,startarea,endarea){
             if(moveplayer==self.controllPlayer.enamy){
                 moveplayer.HP--;
             }

@@ -1,10 +1,11 @@
 exports.Mark= class Mark {
-    constructor(x, property, card,name,text) {
+    constructor(x, property, card,name,text,keepTurns) {
         this.name = name;
         this.text = text;
         this.refCard = card;
         this.controllPlayer=null;
         this.maincontroll=null;
+        this.keepTurns=keepTurns;
     }
     setController(p_){
         this.controllPlayer=p_;
@@ -29,7 +30,7 @@ exports.Mark= class Mark {
             //TODO
 
         },
-        onPlayerMove:function(self,moveplayer){
+        onPlayerMove:function(self,moveplayer,startarea,endarea){
 
         }
     }

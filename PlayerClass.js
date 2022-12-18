@@ -34,6 +34,9 @@ exports.Player= class Player {
         this.collectElementCount_Huo=2;//玩家在凝聚阶段能凝聚多少金元素
         this.canCollectElement_Tu=true;//玩家是否能凝聚金元素
         this.collectElementCount_Tu=2;//玩家在凝聚阶段能凝聚多少金元素
+
+        this.canMove=true;
+        this.moveTimes=1;
     }
     UseCardFromHand(card_,aimpos){
         if(this.handCardList.indexOf(card_)<0){
@@ -126,6 +129,9 @@ exports.Player= class Player {
     set HP(val){
         this.HP_=val;
         this.SyncPlayerInfo();
+        if(this.val<=0){
+            this.GameController.gameOverCheck();
+        }
     }
     get pointJin(){
         return this.pointJin_;
@@ -168,6 +174,9 @@ exports.Player= class Player {
     }
     set area(val){
         if(val!=null){
+            if(this.area_!=val){
+                this.GameController.roundControl.dealPartPlayerMoveEvent(this,this.area_,val);
+            }
             this.area_=val;
         }
     }

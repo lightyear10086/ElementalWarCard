@@ -28,8 +28,43 @@ class MainControl {
         this.gameCardCount=0;
         this.p1.gamePlayer.GameController=this;
         this.p2.gamePlayer.GameController=this;
+        this.gameover=false;
+    }
+    gameOver(player_){
+        this.gameover=true;
+        if(player_==this.p1.gamePlayer && this.p2.gamePlayer.HP>0){
+            this.p1.emit('action',{
+                'name':'gameover',
+                'result':'lose'
+            });
+            this.p2.emit('action',{
+                'name':'gameover',
+                'result':'win'
+            });
+        }else if(player_==this.p2.gamePlayer && this.p1.gamePlayer.HP>0){
+            this.p2.emit('action',{
+                'name':'gameover',
+                'result':'lose'
+            });
+            this.p1.emit('action',{
+                'name':'gameover',
+                'result':'win'
+            });
+        }else if(player_==this.p2.gamePlayer && this.p1.gamePlayer.HP<=0){
+            this.p2.emit('action',{
+                'name':'gameover',
+                'result':'draw'
+            });
+            this.p1.emit('action',{
+                'name':'gameover',
+                'result':'draw'
+            });
+        }
     }
     putMarkToLand(player_,landtype_,mark_){
+        if(this.gameover){
+            return;
+        }
         mark_.setController(player_);
         mark_.maincontroll=this;
         if(landtype_==GameStatic.Part_Jin){
@@ -170,6 +205,9 @@ class MainControl {
     }
     //给指定玩家手牌发指定牌
     putCard(p,card_,params){
+        if(this.gameover){
+            return;
+        }
         if(card_){
             this.gameCardCount++;
             p.gamePlayer.handCardList.push(card_);

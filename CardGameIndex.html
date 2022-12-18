@@ -619,6 +619,15 @@
                     let mark_=msg.mark;
                     putmark(mark_.name,msg.pos,mark_.name,mark_.text);
                 }
+                if(msg.name=='gameover'){
+                    if(msg.result=='lose'){
+                        alert('你输了！');
+                    }else if(msg.result=='win'){
+                        alert('你赢了!');
+                    }else if(msg.result=='draw'){
+                        alert('平局！');
+                    }
+                }
             });
         socket.on('message',function(msg){
             console.log(msg);

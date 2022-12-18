@@ -167,6 +167,9 @@ io.on('connection',(socket)=>{
                     return;
                 }
                 if(PlayerSelf.gamePlayer.nowStepinRound==GameStatic.Part_Move){
+                    if(PlayerSelf.gamePlayer.moveTimes<=0){
+                        return;
+                    }
                     switch(value.area){
                         case 'goldenarea':
                             PlayerSelf.gamePlayer.area=GameStatic.Part_Jin;
@@ -185,6 +188,7 @@ io.on('connection',(socket)=>{
                             break;
                     }
                     PlayerSelf.SetArea();
+                    PlayerSelf.gamePlayer.moveTimes--;
                     return;
                 }
             }
