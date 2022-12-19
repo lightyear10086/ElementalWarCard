@@ -29,6 +29,7 @@ class MainControl {
         this.p1.gamePlayer.GameController=this;
         this.p2.gamePlayer.GameController=this;
         this.gameover=false;
+        this.marksid=0;
     }
     gameOver(player_){
         this.gameover=true;
@@ -65,31 +66,33 @@ class MainControl {
         if(this.gameover){
             return;
         }
+        this.marksid++;
         mark_.setController(player_);
         mark_.maincontroll=this;
+        mark_.mid=this.marksid;
         if(landtype_==GameStatic.Part_Jin){
             if(player_==this.p1.gamePlayer){
                 this.landList[0].markList1.push(mark_);
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_goldenarea_'+this.landList[0].markList1.length
                 });
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_goldenarea_'+this.landList[0].markList1.length
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[0].markList2.push(mark_);
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_goldenarea_'+this.landList[0].markList2.length
                 });
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_goldenarea_'+this.landList[0].markList2.length
                 });
             }
@@ -99,24 +102,24 @@ class MainControl {
                 this.landList[1].markList1.push(mark_);
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_woodenarea_'+this.landList[1].markList1.length
                 });
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_woodenarea_'+this.landList[1].markList1.length
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[1].markList2.push(mark_);
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_woodenarea_'+this.landList[1].markList2.length
                 });
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_woodenarea_'+this.landList[1].markList2.length
                 });
             }
@@ -126,24 +129,24 @@ class MainControl {
                 this.landList[2].markList1.push(mark_);
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_waterarea_'+this.landList[2].markList1.length
                 });
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_waterarea_'+this.landList[2].markList1.length
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[2].markList2.push(mark_);
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_waterarea_'+this.landList[2].markList2.length
                 });
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_waterarea_'+this.landList[2].markList2.length
                 });
             }
@@ -153,24 +156,24 @@ class MainControl {
                 this.landList[3].markList1.push(mark_);
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_firearea_'+this.landList[3].markList1.length
                 });
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_firearea_'+this.landList[3].markList1.length
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[3].markList2.push(mark_);
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_firearea_'+this.landList[3].markList2.length
                 });
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_firearea_'+this.landList[3].markList2.length
                 });
             }
@@ -180,24 +183,24 @@ class MainControl {
                 this.landList[4].markList1.push(mark_);
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_landarea_'+this.landList[4].markList1.length
                 });
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_landarea_'+this.landList[4].markList1.length
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[4].markList2.push(mark_);
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'player_landarea_'+this.landList[4].markList2.length
                 });
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
-                    'mark':{'name':mark_.name,'text':mark_.text},
+                    'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
                     'pos':'enamy_landarea_'+this.landList[4].markList2.length
                 });
             }
@@ -234,7 +237,16 @@ class MainControl {
         card__.maincontrol=this;
         return card__;
     }
+    updateMarkInfo(){
+        for(let i of this.landList){
+            for(let j of i.markList1){
+                
+            }
+            for(let j of i.markList2){
 
+            }
+        }
+    }
     //游戏开始调用
     gameStart(p){
         //初始化牌库

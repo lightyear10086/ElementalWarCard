@@ -6,9 +6,17 @@ exports.Mark= class Mark {
         this.controllPlayer=null;
         this.maincontroll=null;
         this.keepTurns=keepTurns;
+        this.keepTurns_=keepTurns;
     }
     setController(p_){
         this.controllPlayer=p_;
+    }
+    get keepTurns(){
+        return this.keepTurns_;
+    }
+    set keepTurns(val){
+        this.keepTurns_=val;
+        //this.maincontroll.updateMarkInfo();
     }
     events = {
         //凝聚阶段
@@ -26,9 +34,8 @@ exports.Mark= class Mark {
 
         },
         //结束阶段
-        onFinish: function () {
+        onFinish: function (self) {
             //TODO
-
         },
         onPlayerMove:function(self,moveplayer,startarea,endarea){
 

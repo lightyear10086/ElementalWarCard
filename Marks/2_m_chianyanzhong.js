@@ -1,7 +1,7 @@
 let Mark= require('../MarkClass').Mark;
 exports.m_chianyanzhong= class m_chianyanzhong extends Mark{
     constructor(){
-        super(0,0,0,"炽暗焰冢","敌人移动时，受到1点伤害");
+        super(0,0,0,"炽暗焰冢","敌人移动时，受到1点伤害",5);
     }
     
     events = {

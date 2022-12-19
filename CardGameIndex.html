@@ -368,8 +368,8 @@
         function getCardDiv(CardInfo){
             return "<div class='card'></div>";
         }
-        function putmark(imgurl,areaid,marktagname,marktagcontent){
-            $("#"+areaid).append("<img class='markimg' src='Images/"+imgurl+".png'>");
+        function putmark(imgurl,areaid,marktagname,marktagcontent,mid){
+            $("#"+areaid).append("<img id='mid_"+mid+"' class='markimg' src='Images/"+imgurl+".png'>");
             $("#"+areaid).attr("data-areatag",marktagname);
             tipcontent.set(marktagname,marktagcontent+"<img src='Images/"+imgurl+".png'>");
         }
@@ -617,7 +617,7 @@
                 }
                 if(msg.name=='putmark'){
                     let mark_=msg.mark;
-                    putmark(mark_.name,msg.pos,mark_.name,mark_.text);
+                    putmark(mark_.name,msg.pos,mark_.name,mark_.text,mark_.mid);
                 }
                 if(msg.name=='gameover'){
                     if(msg.result=='lose'){
@@ -627,6 +627,10 @@
                     }else if(msg.result=='draw'){
                         alert('平局！');
                     }
+                }
+                if(msg.name=='removemark'){
+                    console.log("移除mark",msg.mark);
+                    $("#mid_"+msg.mark.mid).remove();
                 }
             });
         socket.on('message',function(msg){

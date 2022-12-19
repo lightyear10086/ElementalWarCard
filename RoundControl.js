@@ -58,6 +58,7 @@ exports.RoundControl=class RoundControl {
             return;
         }
         this.roundPartNum++;
+        console.log("阶段数:",this.roundPartNum);
         if(this.roundPartNum == 1){
             this.roundPart = GameStatic.Part_Condensation;
             this.dealPartCondensationEvent();
@@ -165,12 +166,40 @@ exports.RoundControl=class RoundControl {
             let markList1 = land.getMarkList1();
             let markList2 = land.getMarkList2();
             for(let j=0;j<markList1.length;j++){
-                markList1[j].events.onFinish();
+                markList1[j].events.onFinish(markList1[j]);
+                markList1[j].keepTurns--;
             }
             for(let j=0;j<markList2.length;j++){
-                markList2[j].events.onFinish();
+                markList2[j].events.onFinish(markList2[j]);
+                markList2[j].keepTurns--;
+            }
+            for(let j in markList1){
+                console.log("标记剩余:",markList1[j].keepTurns);
+                if(markList1[j].keepTurns<=0){
+                    this.mainControl.p1.playerSocket.emit('action',{
+                        'name':'removemark',
+                        'mark':markList1[j]
+                    });
+                    this.mainControl.p2.playerSocket.emit('action',{
+                        'name':'removemark',
+                        'mark':markList1[j]
+                    });
+                    markList1.splice(j,1);
+                }
+            }
+            for(let j in markList2){
+                if(markList2[j].keepTurns<=0){
+                    this.mainControl.p1.playerSocket.emit('action',{
+                        'name':'removemark',
+                        'mark':markList2[j]
+                    });
+                    this.mainControl.p2.playerSocket.emit('action',{
+                        'name':'removemark',
+                        'mark':markList2[j]
+                    });
+                    markList2.splice(j,1);
+                }
             }
         }
-        
     }
 }
