@@ -59,16 +59,16 @@ exports.RoundControl=class RoundControl {
         }
         this.roundPartNum++;
         console.log("阶段数:",this.roundPartNum);
-        if(this.roundPartNum == 1){
+        if(this.roundPartNum == 0){
             this.roundPart = GameStatic.Part_Condensation;
             this.dealPartCondensationEvent();
-        }else if(this.roundPartNum == 2){
+        }else if(this.roundPartNum == 1){
             this.roundPart = GameStatic.Part_Move;
             this.dealPartMoveEvent();
-        }else if(this.roundPartNum == 3){
+        }else if(this.roundPartNum == 2){
             this.roundPart = GameStatic.Part_PlayHand;
             this.dealPartPlayHandEvent();
-        }else if(this.roundPartNum == 4){
+        }else if(this.roundPartNum == 3){
             this.roundPart = GameStatic.Part_Finish;
             this.dealPartFinishEvent();
         }else{
