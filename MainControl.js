@@ -70,6 +70,7 @@ class MainControl {
         mark_.setController(player_);
         mark_.maincontroll=this;
         mark_.mid=this.marksid;
+        mark_.elementArea=landtype_;
         if(landtype_==GameStatic.Part_Jin){
             if(player_==this.p1.gamePlayer){
                 this.landList[0].markList1.push(mark_);
@@ -204,6 +205,14 @@ class MainControl {
                     'pos':'enamy_landarea_'+this.landList[4].markList2.length
                 });
             }
+            for(let i of this.landList){
+                for(let j of i.getMarkList1){
+                    j.events.onPutMarkToLand(j,player_,landtype_,mark_);
+                }
+                for(let j of i.getMarkList2){
+                    j.events.onPutMarkToLand(j,player_,landtype_,mark_);
+                }
+            }
         }
     }
     //给指定玩家手牌发指定牌
@@ -240,7 +249,7 @@ class MainControl {
     updateMarkInfo(){
         for(let i of this.landList){
             for(let j of i.markList1){
-                
+
             }
             for(let j of i.markList2){
 

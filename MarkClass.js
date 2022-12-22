@@ -7,6 +7,7 @@ exports.Mark= class Mark {
         this.maincontroll=null;
         this.keepTurns=keepTurns;
         this.keepTurns_=keepTurns;
+        this.elementArea=null;
     }
     setController(p_){
         this.controllPlayer=p_;
@@ -39,6 +40,9 @@ exports.Mark= class Mark {
         },
         onPlayerMove:function(self,moveplayer,startarea,endarea){
 
+        },
+        onPutMarkToLand:function(self,player_,area_,mark_){
+            
         }
     }
 }

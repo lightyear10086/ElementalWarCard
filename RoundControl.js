@@ -178,11 +178,11 @@ exports.RoundControl=class RoundControl {
                 if(markList1[j].keepTurns<=0){
                     this.mainControl.p1.playerSocket.emit('action',{
                         'name':'removemark',
-                        'mark':markList1[j]
+                        'mark':markList1[j].mid
                     });
                     this.mainControl.p2.playerSocket.emit('action',{
                         'name':'removemark',
-                        'mark':markList1[j]
+                        'mark':markList1[j].mid
                     });
                     markList1.splice(j,1);
                 }
@@ -191,11 +191,11 @@ exports.RoundControl=class RoundControl {
                 if(markList2[j].keepTurns<=0){
                     this.mainControl.p1.playerSocket.emit('action',{
                         'name':'removemark',
-                        'mark':markList2[j]
+                        'mark':markList2[j].mid
                     });
                     this.mainControl.p2.playerSocket.emit('action',{
                         'name':'removemark',
-                        'mark':markList2[j]
+                        'mark':markList2[j].mid
                     });
                     markList2.splice(j,1);
                 }
