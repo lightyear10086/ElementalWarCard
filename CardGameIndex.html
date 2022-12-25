@@ -55,6 +55,10 @@
             display: inline-block;
             border:dotted 1px;
             display: inline-block;
+            position: relative;
+        }
+        .grid:hover,.area:hover{
+            border: solid 1px white;
         }
         .enamygrids,.playergrids{
             display: flex;
@@ -118,9 +122,22 @@
             position: absolute;
         }
         .markimg{
+            /* position: absolute; */
             display: block;
             width: 100%;
             height: 100%;
+            z-index:7;
+        }
+        .mspan{
+            position:absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 8;
+            font-size: 24px;
+            -webkit-text-stroke: 1px rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.5);
+            top: 0px;
+            left: -15px;
         }
         .playerimg{
             left: -5px;
@@ -132,8 +149,8 @@
             cursor: move;
         }
         .card{
-            width: 111px;
-            height: 157.5px;
+            width: 166.5px;
+            height: 236.25px;
             border: solid 1px;
             background-color: bisque;
             display: inline-block;
@@ -214,6 +231,17 @@
             color: red;
             background-color: chartreuse;
         }
+        .poptip{
+            position: absolute;
+            background-color: cornflowerblue;
+            width: 100%;
+            height: 50px;
+            font-size: 30px;
+            border: solid 2px red;
+            text-align: center;
+            line-height: 50px;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
@@ -274,7 +302,7 @@
 
     </div>
     <div id="gamescene" class="gamescene">
-        
+        <div id="poptip" class="poptip"></div>
         <div id="map" class="map">
             <div id="enamygrids" class="enamygrids">
                 <div id="enamy_goldenareagrids" class="grids goldenareagrids">
@@ -370,6 +398,7 @@
         }
         function putmark(imgurl,areaid,marktagname,marktagcontent,mid){
             $("#"+areaid).append("<img id='mid_"+mid+"' class='markimg' src='Images/"+imgurl+".png' alt='"+marktagname+"'>");
+            $('#'+areaid).append("<div class='mspan' id='mspan_"+mid+"'><div>");
             $("#"+areaid).attr("data-areatag",marktagname);
             tipcontent.set(marktagname,marktagcontent+"<img src='Images/"+imgurl+".png'>");
         }
@@ -414,7 +443,18 @@
                 break;
             }
         }
+        function poptip(content){
+                $("#poptip").text(content);
+                $("#poptip").fadeIn();
+            setTimeout(function(){
+                $("#poptip").fadeOut();
+            },3000);
+        }
         $(function(){
+            $("#poptip").hide();
+            $("#poptip").click(function(){
+                $(this).fadeOut();
+            })
             $(".grid").mouseup(function(){
                 console.log("玩家准备行动的卡牌:",chosedcardid);
                 socket.emit('action',{
@@ -531,7 +571,8 @@
                 $("#zhishixian").show();
             });
         });
-        
+        var playerlandlist=[[],[],[],[],[]];
+        var enamylandlist=[[],[],[],[],[]];
         socket.on('action',function(msg){
                 console.log(msg);
                 if(msg.name=='loginstate'){
@@ -552,12 +593,15 @@
                         socket.emit('action',{
                             'name':'duel',
                             'val':'confirm'
-                        })
+                        });
+                        console.log("确定");
+                        return true;
                     }else{
                         socket.emit('action',{
                             'name':'duel',
                             'val':'reject'
-                        })
+                        });
+                        console.log("取消");
                         return false;
                     }
                 }
@@ -607,10 +651,12 @@
                 if(msg.name=='roundbegin'){
                     $("#nextstep").show();
                     $("#steptext").text("回合开始");
+                    $(".gamescene").css({"background-image":"linear-gradient(#e66465, #9198e5)"});
                 }
                 if(msg.name=='notround'){
                     console.log("不是你的回合");
                     $("#steptext").text("等待对手");
+                    $(".gamescene").css({"background-image":"linear-gradient(#9198e5,#e66465)"});
                 }
                 if(msg.name=='usecardfromhand'){
                     $("#cid_"+msg.card).remove();
@@ -630,11 +676,48 @@
                 }
                 if(msg.name=='removemark'){
                     console.log("移除mark",msg.mark);
+                    $("#mid_"+msg.mark).parent().children(".mspan").remove();
                     $("#mid_"+msg.mark).remove();
+                    resetmarkspos(0);
+                }
+                if(msg.name=='syncmarkinfo'){
+                    $("#mid_"+msg.mark.mid).parent().children(".mspan").text(msg.mark.keepturns);
                 }
             });
+        function resetmarkspos(times){
+            if(times>2){
+                return;
+            }
+            times++;
+            let areas=['goldenarea','woodenarea','waterarea','firearea','landarea'];
+            let p=['enamy','player'];
+            let pos=[1,2,3];
+            let divid=null;
+            for(let i of areas){
+                for(let j of p){
+                    for(let k of pos){
+                        divid=$("#"+j+"_"+i+"_"+k);
+                        let nextpos=k+1;
+                        let nextdivid=$("#"+j+"_"+i+"_"+nextpos);
+                        if(nextdivid.children().length>0 && $(divid).children().length==0){
+                            let tag=$(nextdivid).attr("data-areatag");
+                            let span=$(nextdivid).children(".mspan");
+                            let child = nextdivid.children().first();
+                            child.detach();
+                            span.detach();
+                            $(divid).append(child);
+                            $(divid).append(span);
+                            $(divid).attr("data-areatag",tag);
+                            $(nextdivid).attr("data-areatag","");
+                        }
+                    }
+                }
+            }
+            resetmarkspos(times);
+        }
         socket.on('message',function(msg){
             console.log(msg);
+            poptip(msg.content);
         });
         // socket.on('tipalert',function(msg){
         //     alert(msg.content);

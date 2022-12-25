@@ -5,6 +5,9 @@ exports.m_tiejili= class m_tiejili extends Mark{
     }
     
     events = {
+        onSet(self){
+            
+        },
         //凝聚阶段
         onCondensation: function (self) {
             //TODO
@@ -25,9 +28,12 @@ exports.m_tiejili= class m_tiejili extends Mark{
 
         },
         onPlayerMove:function(self,moveplayer,startarea,endarea){
-            if(moveplayer==self.controllPlayer.enamy && endarea==this.elementArea){
+            if(moveplayer==self.controllPlayer.enamy && endarea==self.elementArea){
                 moveplayer.HP-=2;
             }
+        },
+        onPutMarkToLand:function(self,player_,area_,mark_){
+            
         }
     }
 }

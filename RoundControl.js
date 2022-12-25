@@ -10,6 +10,7 @@ exports.RoundControl=class RoundControl {
 
     //下个回合
     nextRound(){
+        console.log("下个回合");
         if(this.mainControl.gameover){
             return;
         }
@@ -59,18 +60,19 @@ exports.RoundControl=class RoundControl {
         }
         this.roundPartNum++;
         console.log("阶段数:",this.roundPartNum);
-        if(this.roundPartNum == 0){
+        if(this.roundPartNum == 1){
             this.roundPart = GameStatic.Part_Condensation;
             this.dealPartCondensationEvent();
-        }else if(this.roundPartNum == 1){
+        }else if(this.roundPartNum == 2){
             this.roundPart = GameStatic.Part_Move;
             this.dealPartMoveEvent();
-        }else if(this.roundPartNum == 2){
+        }else if(this.roundPartNum == 3){
             this.roundPart = GameStatic.Part_PlayHand;
             this.dealPartPlayHandEvent();
-        }else if(this.roundPartNum == 3){
             this.roundPart = GameStatic.Part_Finish;
             this.dealPartFinishEvent();
+        }else if(this.roundPartNum == 4){
+            
         }else{
             this.nextRound();
         }
@@ -94,6 +96,7 @@ exports.RoundControl=class RoundControl {
                 markList2[j].events.onCondensation(markList2[j]);
             }
         }
+        console.log("玩家凝聚元素:",this.mainControl.roundPlayer.gamePlayer.area);
         this.mainControl.roundPlayer.gamePlayer.CollectElement(this.mainControl.roundPlayer.gamePlayer.area);
     }
 
@@ -126,6 +129,7 @@ exports.RoundControl=class RoundControl {
             let markList1=i.getMarkList1();
             let markList2=i.getMarkList2();
             for(let j of markList1){
+                console.log(j.events);
                 j.events.onPlayerMove(j,player_,startarea_,endarea_);
             }
             for(let j of markList2){
@@ -176,6 +180,7 @@ exports.RoundControl=class RoundControl {
             for(let j in markList1){
                 console.log("标记剩余:",markList1[j].keepTurns);
                 if(markList1[j].keepTurns<=0){
+                    console.log("移除标记:",markList1[j].name);
                     this.mainControl.p1.playerSocket.emit('action',{
                         'name':'removemark',
                         'mark':markList1[j].mid
@@ -189,6 +194,7 @@ exports.RoundControl=class RoundControl {
             }
             for(let j in markList2){
                 if(markList2[j].keepTurns<=0){
+                    console.log("移除标记:",markList2[j].name);
                     this.mainControl.p1.playerSocket.emit('action',{
                         'name':'removemark',
                         'mark':markList2[j].mid

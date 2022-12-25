@@ -17,6 +17,7 @@ var MainControl=require('../Code/MainControl').MainControl;
 
 
 var mysql=require('mysql');
+const { connect } = require('http2');
 process.env.PWD=process.cwd();
 var connection=mysql.createConnection({
     host:'localhost',
@@ -29,6 +30,17 @@ connection.connect(function(err){
     if(err) throw err;
     console.log("连接成功");
 });
+
+connection.on('error',err=>{
+    console.log("自动尝试重新连接数据库:");
+    connection=mysql.createConnection({
+        host:'localhost',
+        user:'root',
+        password:'317406110',
+        database:'elemental',
+        port:'3306'
+    });
+})
 
 app.get('/',(req,res)=>{
     res.sendFile(__dirname+'/CardGameIndex.html');
@@ -134,7 +146,8 @@ io.on('connection',(socket)=>{
                         'content':'正在等待对手确认'
                     });
                 }
-            }else{
+            }else if(value.val=='reject'){
+                PlayerSelf.duelConfirm=0;
                 PlayerSelf.RejectDuel();
             }
         }
@@ -166,8 +179,17 @@ io.on('connection',(socket)=>{
                 if((value.area=='goldenarea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Jin) || (value.area=='woodenarea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Mu) || (value.area=='waterarea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Shui) || (value.area=='firearea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Huo) || (value.area=='landarea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Tu)){
                     return;
                 }
+                if(PlayerSelf.gamePlayer.nowStepinRound!=GameStatic.Part_Move){
+                    PlayerSelf.playerSocket.emit('message',{
+                        'content':'当前不是移动阶段'
+                    });
+                    return;
+                }
                 if(PlayerSelf.gamePlayer.nowStepinRound==GameStatic.Part_Move){
                     if(PlayerSelf.gamePlayer.moveTimes<=0){
+                        PlayerSelf.playerSocket.emit('message',{
+                            'content':'回合内移动次数已耗尽'
+                        })
                         return;
                     }
                     switch(value.area){
@@ -229,8 +251,15 @@ io.on('connection',(socket)=>{
         }
         if(value.name=='usecard'){
             console.log("玩家使用卡牌",value.card,'目标区域id',value.grid);
-            if(PlayerSelf==null){
+            if(PlayerSelf==null || value.card==null){
                 console.log("玩家未创建");
+                return;
+            }
+            if(PlayerSelf.gamePlayer.GameController.roundControl.roundPartNum!=2){
+                console.log(PlayerSelf.gamePlayer.GameController.roundControl.roundPartNum,"玩家不处于出牌阶段");
+                PlayerSelf.playerSocket.emit('message',{
+                    'content':"你现在不处于出牌阶段"
+                })
                 return;
             }
             let card_=PlayerSelf.gamePlayer.handCardList.find((cur,index)=>{
@@ -277,8 +306,8 @@ class GameRoom{
     GameInit(){
         this.p1.gamePlayer=new Player(this.p1.playerSocket);
         this.p2.gamePlayer=new Player(this.p2.playerSocket);
-        this.p1.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢'];
-        this.p2.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢'];
+        this.p1.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢','铁蒺藜','幽林静野'];
+        this.p2.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢','铁蒺藜','幽林静野'];
         this.p1.gamePlayer.enamy=this.p2.gamePlayer;
         this.p2.gamePlayer.enamy=this.p1.gamePlayer;
         this.battlecontroller=new MainControl(this.p1,this.p2);

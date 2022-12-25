@@ -39,9 +39,9 @@ class GlobalPlayer{
             this.enamy.playerSocket.emit('action',{
                 'name':'enamyRejectDuel'
             });
-            this.enamy=null;
-            this.matching=true;
         }
+        this.enamy=null;
+        this.matching=false;
     }
     OffLine(){
         if(this.enamy!=null){

@@ -5,6 +5,9 @@ exports.m_zhouchaoganghua= class m_zhouchaoganghua extends Mark{
     }
     
     events = {
+        onSet(self){
+            
+        },
         //凝聚阶段
         onCondensation: function (self) {
             //TODO
@@ -23,10 +26,16 @@ exports.m_zhouchaoganghua= class m_zhouchaoganghua extends Mark{
             //TODO
 
         },
+        onPlayerMove:function(self,moveplayer,startarea,endarea){
+
+        },
         //结束阶段
         onFinish: function () {
             //TODO
 
         },
+        onPutMarkToLand:function(self,player_,area_,mark_){
+            
+        }
     }
 }

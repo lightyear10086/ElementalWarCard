@@ -5,6 +5,9 @@ exports.m_chianyanzhong= class m_chianyanzhong extends Mark{
     }
     
     events = {
+        onSet(self){
+            
+        },
         //凝聚阶段
         onCondensation: function (self) {
             //TODO
@@ -28,6 +31,9 @@ exports.m_chianyanzhong= class m_chianyanzhong extends Mark{
             if(moveplayer==self.controllPlayer.enamy){
                 moveplayer.HP--;
             }
+        },
+        onPutMarkToLand:function(self,player_,area_,mark_){
+            
         }
     }
 }

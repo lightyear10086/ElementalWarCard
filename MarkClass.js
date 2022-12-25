@@ -17,9 +17,15 @@ exports.Mark= class Mark {
     }
     set keepTurns(val){
         this.keepTurns_=val;
-        //this.maincontroll.updateMarkInfo();
+        if(this.maincontroll!=null){
+            this.maincontroll.updateMarkInfo();
+        }
     }
     events = {
+        //入场时触发
+        onSet:function(self){
+
+        },
         //凝聚阶段
         onCondensation: function () {
             //TODO
