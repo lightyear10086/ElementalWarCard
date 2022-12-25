@@ -52,4 +52,11 @@ class GlobalPlayer{
 
         OnlinePlayerMap.delete(this.playerSocket);
     }
+    GameOver(){
+        this.enamy=null;
+        this.beginArea=GameStatic.Part_Jin;
+        this.gamePlayer=null;
+        this.duelConfirm=1;
+        this.matching=false;
+    }
 }

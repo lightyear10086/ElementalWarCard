@@ -34,33 +34,35 @@ class MainControl {
     gameOver(player_){
         this.gameover=true;
         if(player_==this.p1.gamePlayer && this.p2.gamePlayer.HP>0){
-            this.p1.emit('action',{
+            this.p1.playerSocket.emit('action',{
                 'name':'gameover',
                 'result':'lose'
             });
-            this.p2.emit('action',{
+            this.p2.playerSocket.emit('action',{
                 'name':'gameover',
                 'result':'win'
             });
         }else if(player_==this.p2.gamePlayer && this.p1.gamePlayer.HP>0){
-            this.p2.emit('action',{
+            this.p2.playerSocket.emit('action',{
                 'name':'gameover',
                 'result':'lose'
             });
-            this.p1.emit('action',{
+            this.p1.playerSocket.emit('action',{
                 'name':'gameover',
                 'result':'win'
             });
         }else if(player_==this.p2.gamePlayer && this.p1.gamePlayer.HP<=0){
-            this.p2.emit('action',{
+            this.p2.playerSocket.emit('action',{
                 'name':'gameover',
                 'result':'draw'
             });
-            this.p1.emit('action',{
+            this.p1.playerSocket.emit('action',{
                 'name':'gameover',
                 'result':'draw'
             });
         }
+        this.p1.GameOver();
+        this.p2.GameOver();
     }
     putMarkToLand(player_,landtype_,mark_){
         if(this.gameover){

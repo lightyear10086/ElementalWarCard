@@ -281,7 +281,6 @@
             <div class="btn default-btn" id="nextstep">下一阶段</div>
             <div class="btn alert-btn" id="surrender">投降</div>
         </div>
-        
     </div>
     <div id="cardwarehouse" class="cardwarehouse default-window">
         <div class="windowtitlebar" data-bindwindowid="cardwarehouse">卡组编辑</div>
@@ -451,6 +450,11 @@
             },3000);
         }
         $(function(){
+            $("#surrender").click(function(){
+                socket.emit('action',{
+                    'name':'surrender'
+                })
+            })
             $("#poptip").hide();
             $("#poptip").click(function(){
                 $(this).fadeOut();
@@ -613,6 +617,7 @@
                         alert('你后手');
                     }
                     $("#playergamepoints").show();
+
                 }
                 if(msg.name=='setArea'){
                     setPlayerArea(msg.area);
@@ -665,15 +670,6 @@
                     let mark_=msg.mark;
                     putmark(mark_.name,msg.pos,mark_.name,mark_.text,mark_.mid);
                 }
-                if(msg.name=='gameover'){
-                    if(msg.result=='lose'){
-                        alert('你输了！');
-                    }else if(msg.result=='win'){
-                        alert('你赢了!');
-                    }else if(msg.result=='draw'){
-                        alert('平局！');
-                    }
-                }
                 if(msg.name=='removemark'){
                     console.log("移除mark",msg.mark);
                     $("#mid_"+msg.mark).parent().children(".mspan").remove();
@@ -683,7 +679,28 @@
                 if(msg.name=='syncmarkinfo'){
                     $("#mid_"+msg.mark.mid).parent().children(".mspan").text(msg.mark.keepturns);
                 }
+                if(msg.name=='gameover'){
+                    switch(msg.result){
+                        case 'win':
+                            poptip("胜利！");
+                            break;
+                        case 'lose':
+                            poptip("战败！");
+                            break;
+                        case "draw":
+                            poptip("平手！");
+                            break;
+                    }
+                    resetGameScene();
+                }
             });
+        function resetGameScene(){
+            $(".grid").children().remove();
+            $(".grid").attr("data-areatag","空领地");
+            $("#playerGamePoints").hide();
+            $("#gameactions").show();
+            $("#handarea").children().remove();
+        }
         function resetmarkspos(times){
             if(times>2){
                 return;

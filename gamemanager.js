@@ -270,6 +270,9 @@ io.on('connection',(socket)=>{
                 PlayerSelf.gamePlayer.UseCardFromHand(card_,value.grid);
             }
         }
+        if(value.name=='surrender'){
+            PlayerSelf.gamePlayer.GameController.gameOver(PlayerSelf.gamePlayer);
+        }
     });
 });
 
