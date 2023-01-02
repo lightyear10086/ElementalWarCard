@@ -20,6 +20,7 @@ exports.Player= class Player {
         this.handCardList = new Array();
         this.playerCardLibrary=new Array();
         this.enamy=null;
+        this.elementalSprite={'Jin':0,'Mu':0,'Shui':0,'Huo':0,'Tu':0}
         
         this.nowStepinRound=GameStatic.Part_Condensation;
         this.GameController=null;
@@ -121,12 +122,38 @@ exports.Player= class Player {
             'Huo':this.pointHuo,
             'Tu':this.pointTu,
             'HP':this.HP
-        })
+        });
+        if(this.enamy!=null){
+            this.enamy.sock.emit('action',{
+                'name':'enamysync',
+                'Jin':this.pointJin,
+                'Mu':this.pointMu,
+                'Shui':this.pointShui,
+                'Huo':this.pointHuo,
+                'Tu':this.pointTu,
+                'HP':this.HP
+            })
+        }
+        
     }
     get HP(){
         return this.HP_;
     }
     set HP(val){
+        if(this.GameController!=null){
+            this.GameController.PlayerHPChange(this,this.HP_-val);
+        }
+        if(val>this.HP_){
+            this.sock.emit('anime',{
+                'name':'getHP',
+                'params':{}
+            });
+        }else{
+            this.sock.emit('anime',{
+                'name':'lostHP',
+                'params':{}
+            });
+        }
         this.HP_=val;
         this.SyncPlayerInfo();
         if(this.val<=0){
@@ -137,6 +164,14 @@ exports.Player= class Player {
         return this.pointJin_;
     }
     set pointJin(val){
+        if(val>this.pointJin_){
+            this.sock.emit('anime',{
+                'name':'getelement',
+                'params':{
+                    'elementtype':'jinyuansu'
+                }
+            });
+        }
         this.pointJin_=val;
         this.SyncPlayerInfo();
     }
@@ -144,6 +179,14 @@ exports.Player= class Player {
         return this.pointMu_;
     }
     set pointMu(val){
+        if(val>this.pointMu_){
+            this.sock.emit('anime',{
+                'name':'getelement',
+                'params':{
+                    'elementtype':'muyuansu'
+                }
+            });
+        }
         this.pointMu_=val;
         this.SyncPlayerInfo();
     }
@@ -151,6 +194,14 @@ exports.Player= class Player {
         return this.pointShui_;
     }
     set pointShui(val){
+        if(val>this.pointShui_){
+            this.sock.emit('anime',{
+                'name':'getelement',
+                'params':{
+                    'elementtype':'shuiyuansu'
+                }
+            });
+        }
         this.pointShui_=val;
         this.SyncPlayerInfo();
     }
@@ -158,6 +209,14 @@ exports.Player= class Player {
         return this.pointHuo_;
     }
     set pointHuo(val){
+        if(val>this.pointHuo_){
+            this.sock.emit('anime',{
+                'name':'getelement',
+                'params':{
+                    'elementtype':'huoyuansu'
+                }
+            });
+        }
         this.pointHuo_=val;
         this.SyncPlayerInfo();
     }
@@ -165,6 +224,14 @@ exports.Player= class Player {
         return this.pointTu_;
     }
     set pointTu(val){
+        if(val>this.pointTu_){
+            this.sock.emit('anime',{
+                'name':'getelement',
+                'params':{
+                    'elementtype':'tuyuansu'
+                }
+            });
+        }
         this.pointTu_=val;
         this.SyncPlayerInfo();
     }

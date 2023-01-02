@@ -31,6 +31,18 @@ class MainControl {
         this.gameover=false;
         this.marksid=0;
     }
+    PlayerHPChange(p_,offset){
+        if(offset>0){
+            for(let i of this.landList){
+                for(let j of i.getMarkList1()){
+                    j.events.onPlayerHpChanged(j,p_,offset);
+                }
+                for(let k of i.getMarkList2()){
+                    k.events.onPlayerHpChanged(k,p_,offset);
+                }
+            }
+        }
+    }
     gameOver(player_){
         this.gameover=true;
         if(player_==this.p1.gamePlayer && this.p2.gamePlayer.HP>0){
@@ -76,6 +88,7 @@ class MainControl {
         if(landtype_==GameStatic.Part_Jin){
             if(player_==this.p1.gamePlayer){
                 this.landList[0].markList1.push(mark_);
+                this.p1.gamePlayer.elementalSprite.Jin++;
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -88,6 +101,7 @@ class MainControl {
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[0].markList2.push(mark_);
+                this.p2.gamePlayer.elementalSprite.Jin++;
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -103,6 +117,7 @@ class MainControl {
         if(landtype_==GameStatic.Part_Mu){
             if(player_==this.p1.gamePlayer){
                 this.landList[1].markList1.push(mark_);
+                this.p1.gamePlayer.elementalSprite.Mu++;
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -115,6 +130,7 @@ class MainControl {
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[1].markList2.push(mark_);
+                this.p2.gamePlayer.elementalSprite.Mu++;
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -130,6 +146,7 @@ class MainControl {
         if(landtype_==GameStatic.Part_Shui){
             if(player_==this.p1.gamePlayer){
                 this.landList[2].markList1.push(mark_);
+                this.p1.gamePlayer.elementalSprite.Shui++;
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -142,6 +159,7 @@ class MainControl {
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[2].markList2.push(mark_);
+                this.p2.gamePlayer.elementalSprite.Shui++;
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -157,6 +175,7 @@ class MainControl {
         if(landtype_==GameStatic.Part_Huo){
             if(player_==this.p1.gamePlayer){
                 this.landList[3].markList1.push(mark_);
+                this.p1.gamePlayer.elementalSprite.Huo++;
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -169,6 +188,7 @@ class MainControl {
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[3].markList2.push(mark_);
+                this.p2.gamePlayer.elementalSprite.Huo++;
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -184,6 +204,7 @@ class MainControl {
         if(landtype_==GameStatic.Part_Tu){
             if(player_==this.p1.gamePlayer){
                 this.landList[4].markList1.push(mark_);
+                this.p1.gamePlayer.elementalSprite.Tu++;
                 this.p1.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -196,6 +217,7 @@ class MainControl {
                 });
             }else if(player_==this.p2.gamePlayer){
                 this.landList[4].markList2.push(mark_);
+                this.p2.gamePlayer.elementalSprite.Tu++;
                 this.p2.playerSocket.emit('action',{
                     'name':'putmark',
                     'mark':{'name':mark_.name,'text':mark_.text,'mid':mark_.mid},
@@ -286,6 +308,8 @@ class MainControl {
         }else if(p==this.p2){
             this.roundPlayer=this.p2;
         }
+        this.p1.gamePlayer.SyncPlayerInfo();
+        this.p2.gamePlayer.SyncPlayerInfo();
         this.roundControl.nextRound();
     }
 }

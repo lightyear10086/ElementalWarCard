@@ -49,6 +49,12 @@ exports.Mark= class Mark {
         },
         onPutMarkToLand:function(self,player_,area_,mark_){
             
+        },
+        onBeRemoved:function(self){
+
+        },
+        onPlayerHpChanged:function(self,changeplayer,changeval){
+            
         }
     }
 }

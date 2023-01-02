@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/color/jquery.color-2.2.0.js" integrity="sha256-gvMJWDHjgDrVSiN6eBI9h7dRfQmsTTsGU/eTT8vpzNg=" crossorigin="anonymous"></script>
     <script src="CardGameJS.js"></script>
     <title>元素战争</title>
     <style>
@@ -20,13 +21,21 @@
         }
         .leftUI,.gameactions,.playergamepoints{
             justify-content: left;
-            float: left;
             margin-right: -50%;
             border: solid 1px;
             background-color: rgb(114, 114, 212);
             width: 400px;
             height: 200px;
             float:left;
+        }
+        .enamygamepoints{
+            justify-content: left;
+            margin-left: -50%;
+            border: solid 1px;
+            background-color: rgb(224, 81, 15);
+            width: 400px;
+            height: 200px;
+            float:right;
         }
         .map{
             margin: auto;
@@ -135,7 +144,7 @@
             z-index: 8;
             font-size: 24px;
             -webkit-text-stroke: 1px rgba(0, 0, 0, 0.5);
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.726);
             top: 0px;
             left: -15px;
         }
@@ -242,6 +251,11 @@
             line-height: 50px;
             z-index: 10;
         }
+        .floattext{
+            color: chartreuse;
+            font-size: 25px;
+            position: absolute;
+        }
     </style>
 </head>
 <body>
@@ -280,6 +294,19 @@
             <div id="steptext"></div>
             <div class="btn default-btn" id="nextstep">下一阶段</div>
             <div class="btn alert-btn" id="surrender">投降</div>
+        </div>
+    </div>
+    <div id="enamyGamePoints" class="enamygamepoints">
+        <div class="points">
+            <p id="enamyjinyuansu">金元素 </p>
+            <p id="enamymuyuansu">木元素 </p>
+            <p id="enamyshuiyuansu">水元素 </p>
+            <p id="enamyhuoyuansu">火元素 </p>
+            <p id="enamytuyuansu">土元素 </p>
+        </div>
+        <div id="enamyotheraction" class="otheraction">
+            <p id="enamyhp">生命值</p>
+            <div id="enamysteptext"></div>
         </div>
     </div>
     <div id="cardwarehouse" class="cardwarehouse default-window">
@@ -473,6 +500,7 @@
                 })
             })
             $("#playerGamePoints").hide();
+            $("#enamyGamePoints").hide();
             $(".area").click(function(){
                 socket.emit('action',{
                     'name':'setBornArea',
@@ -617,6 +645,7 @@
                         alert('你后手');
                     }
                     $("#playergamepoints").show();
+                    $("#enamygamepoints").show();
 
                 }
                 if(msg.name=='setArea'){
@@ -638,6 +667,7 @@
                 }
                 if(msg.name=='GameInit'){
                     $("#playerGamePoints").show();
+                    $("#enamyGamePoints").show();
                 }
                 if(msg.name=='sync'){
                     $("#jinyuansu").text('金元素 '+msg.Jin);
@@ -646,6 +676,14 @@
                     $("#huoyuansu").text('火元素 '+msg.Huo);
                     $("#tuyuansu").text('土元素 '+msg.Tu);
                     $("#hp").text("生命值 "+msg.HP);
+                }
+                if(msg.name=='enamysync'){
+                    $("#enamyjinyuansu").text('金元素 '+msg.Jin);
+                    $("#enamymuyuansu").text('木元素 '+msg.Mu);
+                    $("#enamyshuiyuansu").text('水元素 '+msg.Shui);
+                    $("#enamyhuoyuansu").text('火元素 '+msg.Huo);
+                    $("#enamytuyuansu").text('土元素 '+msg.Tu);
+                    $("#enamyhp").text("生命值 "+msg.HP);
                 }
                 if(msg.name=='step'){
                     $("#steptext").text(msg.step);
@@ -698,8 +736,48 @@
             $(".grid").children().remove();
             $(".grid").attr("data-areatag","空领地");
             $("#playerGamePoints").hide();
+            $("#enamyGamePoints").hide();
             $("#gameactions").show();
             $("#handarea").children().remove();
+        }
+        function animationManager(animatename,params){
+            if(animatename=='getelement'){
+                $("#"+params.elementtype).animate({
+                    backgroundColor:'#54e262',
+                    color:'white'
+                },"slow",function(){
+                    $(this).animate({
+                        backgroundColor:'transparent',
+                        color:'black'
+                    },"slow");
+                });
+            }
+            if(animatename=='getHP'){
+                $("#hp").animate({
+                    backgroundColor:'white',
+                    color:"green"
+                },"slow",function(){
+                    $(this).animate({
+                        backgroundColor:'transparent',
+                        color:"black"
+                    },'slow');
+                });
+            }
+            if(animatename=='lostHP'){
+                $("#hp").animate({
+                    backgroundColor:'yellow',
+                    color:"red"
+                },"slow",function(){
+                    $(this).animate({
+                        backgroundColor:'transparent',
+                        color:"black"
+                    },'slow');
+                });
+            }
+            if(animatename=='floattext'){
+                $("body").append("<div class='floattext'>"+params.textcontent+"</div>");
+
+            }
         }
         function resetmarkspos(times){
             if(times>2){
@@ -736,6 +814,9 @@
             console.log(msg);
             poptip(msg.content);
         });
+        socket.on('anime',function(msg){
+            animationManager(msg.name,msg.params);
+        })
         // socket.on('tipalert',function(msg){
         //     alert(msg.content);
         // })

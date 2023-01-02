@@ -1,7 +1,7 @@
 let Mark= require('../MarkClass').Mark;
-exports.m_tiejili= class m_tiejili extends Mark{
+exports.m_guihuo= class m_guihuo extends Mark{
     constructor(){
-        super(0,0,0,"铁蒺藜","【敌落】对敌人造成2点伤害",3);
+        super(0,0,0,"鬼火","敌人受伤时，你+1火元素",3);
     }
     
     events = {
@@ -28,15 +28,15 @@ exports.m_tiejili= class m_tiejili extends Mark{
 
         },
         onPlayerMove:function(self,moveplayer,startarea,endarea){
-            if(moveplayer==self.controllPlayer.enamy && endarea==self.elementArea){
-                moveplayer.HP-=2;
-            }
+            
         },
         onPutMarkToLand:function(self,player_,area_,mark_){
             
         },
         onPlayerHpChanged:function(self,changeplayer,changeval){
-            
+            if(changeplayer==self.controllPlayer.enamy){
+                self.controllPlayer.pointHuo+=1;
+            }
         }
     }
 }

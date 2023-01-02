@@ -49,6 +49,9 @@ exports.m_youlinjingye= class m_youlinjingye extends Mark{
         },
         onPutMarkToLand:function(self,player_,area_,mark_){
             
+        },
+        onPlayerHpChanged:function(self,changeplayer,changeval){
+            
         }
     }
 }

@@ -47,8 +47,6 @@ app.get('/',(req,res)=>{
 });
 app.use(express.static(process.env.PWD+'/public'));
 
-
-
 io.on('connection',(socket)=>{
     console.log('a user connected');
     let PlayerSelf=null;
@@ -309,8 +307,8 @@ class GameRoom{
     GameInit(){
         this.p1.gamePlayer=new Player(this.p1.playerSocket);
         this.p2.gamePlayer=new Player(this.p2.playerSocket);
-        this.p1.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢','铁蒺藜','幽林静野'];
-        this.p2.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢','铁蒺藜','幽林静野'];
+        this.p1.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢','铁蒺藜','幽林静野','鬼火'];
+        this.p2.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢','铁蒺藜','幽林静野','鬼火'];
         this.p1.gamePlayer.enamy=this.p2.gamePlayer;
         this.p2.gamePlayer.enamy=this.p1.gamePlayer;
         this.battlecontroller=new MainControl(this.p1,this.p2);

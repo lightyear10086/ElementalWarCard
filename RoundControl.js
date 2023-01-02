@@ -171,11 +171,15 @@ exports.RoundControl=class RoundControl {
             let markList2 = land.getMarkList2();
             for(let j=0;j<markList1.length;j++){
                 markList1[j].events.onFinish(markList1[j]);
-                markList1[j].keepTurns--;
+                if(markList1[j].controllPlayer==this.mainControl.roundPlayer.gamePlayer){
+                    markList1[j].keepTurns--;
+                }
             }
             for(let j=0;j<markList2.length;j++){
                 markList2[j].events.onFinish(markList2[j]);
-                markList2[j].keepTurns--;
+                if(markList2[j].controllPlayer==this.mainControl.roundPlayer.gamePlayer){
+                    markList2[j].keepTurns--;
+                }
             }
             for(let j in markList1){
                 console.log("标记剩余:",markList1[j].keepTurns);

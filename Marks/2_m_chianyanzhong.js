@@ -34,6 +34,9 @@ exports.m_chianyanzhong= class m_chianyanzhong extends Mark{
         },
         onPutMarkToLand:function(self,player_,area_,mark_){
             
+        },
+        onPlayerHpChanged:function(self,changeplayer,changeval){
+            
         }
     }
 }
