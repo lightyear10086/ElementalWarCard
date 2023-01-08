@@ -36,6 +36,7 @@
             <div class="btn default-btn" id="groupmanager">配置卡组</div>
             <div class="btn default-btn" id="match">开始匹配</div>
             <div class="btn default-btn" id="logout">退出登录</div>
+            <select id="playercardgroups" class="playercardgroups"></select>
         </div>
         
     </div>
@@ -82,7 +83,7 @@
     </div>
     
     <div id="cardwarehouse" class="cardwarehouse default-window">
-        <div class="windowtitlebar" data-bindwindowid="cardwarehouse">卡组编辑</div>
+        <div class="windowtitlebar">卡组编辑<span data-bindwindow="cardwarehouse" class="closewindowbtn">×</span></div>
         <div class="windowtoolbar">
             <div class="btn default-btn">新建卡组</div>
             <div class="btn default-btn">保存卡组</div>
@@ -90,14 +91,19 @@
             <div class="btn default-btn">导入卡组</div>
             <div class="btn default-btn">导出卡组</div>
         </div>
-        <div class="screen" id="playerallcards" style="float:left;width: 33%;">
-            <select id="playercardlist" size="30" class="playercardlist"></select>
+        <div class="screen" id="playerallcards" style="float:left;">
+            <select id="playercardlist" size="30" class="playercardlist" style="width:33%;float: left;"></select>
+            <select id="cardgroupselect" class="cardgroupselect" style="width: 33%;float: left;"></select>
+            <div class="screen" id="chosecardinfo" style="width: 33%;float: left;">当前选中卡牌的信息</div>
         </div>
-        <div class="screen" id="playereditgroup" style="float:left;width: 33%;">
-            <select id="cardgroupselect" class="cardgroupselect"></select>
+        <!-- <div class="screen" id="playereditgroup" style="float:left;width: 33%;">
+            
+        </div> -->
+        
+        <div class="build_chosecard_actions">
+            <div class="btn default-btn">放入构筑</div>
+            <div class="btn default-btn">全部放入</div>
         </div>
-        <div class="screen" id="chosecardinfo" style="float:left;width: 33%;">当前选中卡牌的信息</div>
-
     </div>
     <div id="gamescene" class="gamescene">
         <div id="poptip" class="poptip"></div>

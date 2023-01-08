@@ -121,10 +121,25 @@ io.on('connection',(socket)=>{
                                     'name':'cardinfo',
                                     'card':res,
                                     'count':j.count
-                                })
-                            })
+                                });
+                            });
                         }
-                    })
+                    });
+                    sql="SELECT groupname,groupcards FROM playercardgroup WHERE playername='"+accountname+"'";
+                    connection.query(sql,function(err,res,fields){
+                        if(err) throw err;
+                        if(res.length<=0){
+                            return;
+                        }
+                        for(let k of res){
+                            console.log(JSON.parse(k['groupcards']));
+                            socket.emit('action',{
+                                'name':'synccardgroups',
+                                'groupname':k['groupname'],
+                                'groupcards':JSON.parse(k['groupcards'])
+                            });
+                        }
+                    });
                 }else{
                     socket.emit('action',{
                         'name':'loginstate',
