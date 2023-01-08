@@ -57,6 +57,34 @@ io.on('connection',(socket)=>{
         }
         PlayerSelf.OffLine();
     });
+    socket.on('talk',function(msg){
+        console.log(msg);
+        if(msg.tag=='dayile'){
+            PlayerSelf.enamy.playerSocket.emit('talktoenamy',{
+                'content':'大意了，没有闪'
+            });
+        }
+        if(msg.tag=='jiuzhe'){
+            PlayerSelf.enamy.playerSocket.emit('talktoenamy',{
+                'content':'就这？太弱，太弱！'
+            });
+        }
+        if(msg.tag=='dongjing'){
+            PlayerSelf.enamy.playerSocket.emit('talktoenamy',{
+                'content':'什么动静？'
+            });
+        }
+        if(msg.tag=='zhongliangji'){
+            PlayerSelf.enamy.playerSocket.emit('talktoenamy',{
+                'content':'这位更是重量级'
+            });
+        }
+        if(msg.tag=='homo'){
+            PlayerSelf.enamy.playerSocket.emit('talktoenamy',{
+                'content':'你是一个一个一个……'
+            });
+        }
+    });
     socket.on('action',function(value){
         console.log(value);
         if(value.name=='register'){
@@ -151,6 +179,9 @@ io.on('connection',(socket)=>{
         }
         if(value.name=='next'){
             PlayerSelf.gamePlayer.GameController.roundControl.nextPart();
+            if(PlayerSelf.gamePlayer==null){
+                return;
+            }
             if(PlayerSelf.gamePlayer.nowStepinRound==GameStatic.Part_Condensation){
                 PlayerSelf.gamePlayer.nowStepinRound=GameStatic.Part_Move;
                 socket.emit('action',{
@@ -242,6 +273,9 @@ io.on('connection',(socket)=>{
         }
         if(value.name=='chosedcard'){
             console.log("玩家选中了卡牌",value.card);
+            if(PlayerSelf==null){
+                return;
+            }
             let chosedcard= PlayerSelf.gamePlayer.handCardList.find((currentval,index)=>{
                 return value.card== "cid_"+currentval.cid;
             });
@@ -307,8 +341,8 @@ class GameRoom{
     GameInit(){
         this.p1.gamePlayer=new Player(this.p1.playerSocket);
         this.p2.gamePlayer=new Player(this.p2.playerSocket);
-        this.p1.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢','铁蒺藜','幽林静野','鬼火'];
-        this.p2.gamePlayer.playerCardLibrary=['咒潮钢华','炽暗焰冢','铁蒺藜','幽林静野','鬼火'];
+        this.p1.gamePlayer.playerCardLibrary=['棘刺'];
+        this.p2.gamePlayer.playerCardLibrary=['棘刺'];
         this.p1.gamePlayer.enamy=this.p2.gamePlayer;
         this.p2.gamePlayer.enamy=this.p1.gamePlayer;
         this.battlecontroller=new MainControl(this.p1,this.p2);

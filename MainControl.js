@@ -256,6 +256,7 @@ class MainControl {
             return card_;
         }
         if(p.gamePlayer.playerCardLibrary.length<=0){
+            p.gamePlayer.HP--;
             return;
         }
         this.gameCardCount++;

@@ -96,7 +96,9 @@ exports.RoundControl=class RoundControl {
                 markList2[j].events.onCondensation(markList2[j]);
             }
         }
-        console.log("玩家凝聚元素:",this.mainControl.roundPlayer.gamePlayer.area);
+        if(this.mainControl.gameover){
+            return;
+        }
         this.mainControl.roundPlayer.gamePlayer.CollectElement(this.mainControl.roundPlayer.gamePlayer.area);
     }
 

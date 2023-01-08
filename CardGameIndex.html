@@ -6,10 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/color/jquery.color-2.2.0.js" integrity="sha256-gvMJWDHjgDrVSiN6eBI9h7dRfQmsTTsGU/eTT8vpzNg=" crossorigin="anonymous"></script>
-    <script src="https://cdn.staticfile.org/jquery/3.4.0/jquery.min.js"></script>
+    <!-- <script src="https://cdn.staticfile.org/jquery/3.4.0/jquery.min.js"></script> -->
     <script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
     <title>元素战争</title>
     <link rel="stylesheet" href="css/index.css">
+    <script src="/socket.io/socket.io.js">
+    </script>
+    <script src="js/index.js"></script>
 </head>
 <body>
     <svg width="100%" height="100%" style="position:absolute;" class="svg">
@@ -51,19 +54,33 @@
             <div class="btn alert-btn" id="surrender">投降</div>
         </div>
     </div>
-    <div id="enamyGamePoints" class="enamygamepoints">
-        <div class="points">
-            <p id="enamyjinyuansu">金元素 </p>
-            <p id="enamymuyuansu">木元素 </p>
-            <p id="enamyshuiyuansu">水元素 </p>
-            <p id="enamyhuoyuansu">火元素 </p>
-            <p id="enamytuyuansu">土元素 </p>
+    <div id="enamy" class="enamy">
+        <div id="enamyGamePoints" class="enamygamepoints">
+            <div class="points">
+                <p id="enamyjinyuansu">金元素 </p>
+                <p id="enamymuyuansu">木元素 </p>
+                <p id="enamyshuiyuansu">水元素 </p>
+                <p id="enamyhuoyuansu">火元素 </p>
+                <p id="enamytuyuansu">土元素 </p>
+            </div>
+            <div id="enamyotheraction" class="otheraction">
+                <p id="enamyhp">生命值</p>
+                <div id="enamysteptext"></div>
+                <div>
+                    <div class="btn default-btn talktoenamy" data-type="dayile">大意了</div>
+                    <div class="btn default-btn talktoenamy" data-type="jiuzhe">就这？</div>
+                    <div class="btn default-btn talktoenamy" data-type="dongjing">什么动静？</div>
+                    <div class="btn default-btn talktoenamy" data-type="zhongliangji">重量级</div>
+                    <div class="btn default-btn talktoenamy" data-type="homo">HOMO</div>
+                </div>
+                
+            </div>
         </div>
-        <div id="enamyotheraction" class="otheraction">
-            <p id="enamyhp">生命值</p>
-            <div id="enamysteptext"></div>
+        <div class="enamytalk" id="enamytalk">
+    
         </div>
     </div>
+    
     <div id="cardwarehouse" class="cardwarehouse default-window">
         <div class="windowtitlebar" data-bindwindowid="cardwarehouse">卡组编辑</div>
         <div class="windowtoolbar">
@@ -154,8 +171,6 @@
             <div class="cardtext">卡牌信息</div>
         </div> -->
     </div>
-    <script src="/socket.io/socket.io.js">
-    </script>
-    <script src="js/index.js"></script>
+    
 </body>
 </html>

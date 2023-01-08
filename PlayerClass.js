@@ -156,8 +156,8 @@ exports.Player= class Player {
         }
         this.HP_=val;
         this.SyncPlayerInfo();
-        if(this.val<=0){
-            this.GameController.gameOverCheck();
+        if(val<=0){
+            this.GameController.gameOver(this);
         }
     }
     get pointJin(){
