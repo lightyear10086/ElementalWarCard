@@ -219,6 +219,9 @@ io.on('connection',(socket)=>{
             }
         }
         if(value.name=='setBornArea'){
+            if(PlayerSelf==null){
+                return;
+            }
             if(PlayerSelf.gamePlayer!=null){
                 if((value.area=='goldenarea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Jin) || (value.area=='woodenarea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Mu) || (value.area=='waterarea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Shui) || (value.area=='firearea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Huo) || (value.area=='landarea' && PlayerSelf.gamePlayer.area==GameStatic.Part_Tu)){
                     return;
