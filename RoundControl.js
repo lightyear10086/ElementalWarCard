@@ -7,7 +7,21 @@ exports.RoundControl=class RoundControl {
         this.roundPartNum = 0;//当前阶段数
         this.roundPart = "";//当前回合阶段(凝聚、移动、出牌、结束)
     }
-
+    getCard(player_,card_){
+        console.log("触发111111");
+        const landList = this.mainControl.landList;
+        for(let i=0;i<landList.length;i++){
+            const land = landList[i];
+            let markList1 = land.getMarkList1();
+            let markList2 = land.getMarkList2();
+            for(let j=0;j<markList1.length;j++){
+                markList1[j].onGetCard(player_,card_);
+            }
+            for(let j=0;j<markList2.length;j++){
+                markList2[j].onGetCard(player_,card_);
+            }
+        }
+    }
     //下个回合
     nextRound(){
         console.log("下个回合");
@@ -172,16 +186,18 @@ exports.RoundControl=class RoundControl {
             let markList1 = land.getMarkList1();
             let markList2 = land.getMarkList2();
             for(let j=0;j<markList1.length;j++){
+                markList1[j].onFinish();
                 markList1[j].events.onFinish(markList1[j]);
-                if(markList1[j].controllPlayer==this.mainControl.roundPlayer.gamePlayer){
-                    markList1[j].keepTurns--;
-                }
+                // if(markList1[j].controllPlayer==this.mainControl.roundPlayer.gamePlayer){
+                //     markList1[j].keepTurns--;
+                // }
             }
             for(let j=0;j<markList2.length;j++){
+                markList2[j].onFinish();
                 markList2[j].events.onFinish(markList2[j]);
-                if(markList2[j].controllPlayer==this.mainControl.roundPlayer.gamePlayer){
-                    markList2[j].keepTurns--;
-                }
+                // if(markList2[j].controllPlayer==this.mainControl.roundPlayer.gamePlayer){
+                //     markList2[j].keepTurns--;
+                // }
             }
             for(let j in markList1){
                 console.log("标记剩余:",markList1[j].keepTurns);

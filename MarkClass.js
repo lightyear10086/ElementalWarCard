@@ -21,6 +21,17 @@ exports.Mark= class Mark {
             this.maincontroll.updateMarkInfo();
         }
     }
+    onFinish(){
+        if(this.controllPlayer==this.maincontroll.roundPlayer.gamePlayer){
+            this.keepTurns--;
+        }
+    }
+    onTurnBegin(player_){
+        
+    }
+    onGetCard(player_,card_){
+        
+    }
     events = {
         //入场时触发
         onSet:function(self){
@@ -43,6 +54,7 @@ exports.Mark= class Mark {
         //结束阶段
         onFinish: function (self) {
             //TODO
+            
         },
         onPlayerMove:function(self,moveplayer,startarea,endarea){
 
@@ -55,6 +67,7 @@ exports.Mark= class Mark {
         },
         onPlayerHpChanged:function(self,changeplayer,changeval){
             
-        }
+        },
+        onPlayerGetCard:function(self,player_,card_){}
     }
 }

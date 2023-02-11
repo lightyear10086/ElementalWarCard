@@ -23,7 +23,7 @@ exports.m_tiejili= class m_tiejili extends Mark{
 
         },
         //结束阶段
-        onFinish: function () {
+        onFinish: function (self) {
             //TODO
 
         },

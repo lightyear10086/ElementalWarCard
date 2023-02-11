@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "my game all right belong to Lauyang yang.",
   "dependencies": {
+    "axios": "^1.3.2",
     "crypto-js": "^4.1.1",
     "express": "^4.18.2",
     "mysql": "^2.18.1",

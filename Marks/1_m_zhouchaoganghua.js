@@ -35,7 +35,7 @@ exports.m_zhouchaoganghua= class m_zhouchaoganghua extends Mark{
             }
         },
         //结束阶段
-        onFinish: function () {
+        onFinish: function (self) {
             //TODO
 
         },

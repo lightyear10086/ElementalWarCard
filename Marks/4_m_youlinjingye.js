@@ -39,6 +39,9 @@ exports.m_youlinjingye= class m_youlinjingye extends Mark{
         },
         //结束阶段
         onFinish: function (self) {
+            if(self.controllPlayer==self.maincontrol.roundPlayer.gamePlayer){
+                keepTurns--;
+            }
             //TODO
             self.lastplayerarea=self.controllPlayer.area;
         },

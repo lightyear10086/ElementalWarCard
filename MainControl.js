@@ -246,6 +246,7 @@ class MainControl {
             return;
         }
         if(card_){
+            this.roundControl.getCard(p,card_);
             this.gameCardCount++;
             p.gamePlayer.handCardList.push(card_);
             card_.cid=this.gameCardCount;
@@ -256,6 +257,9 @@ class MainControl {
             return card_;
         }
         if(p.gamePlayer.playerCardLibrary.length<=0){
+            p.playerSocket.emit('message',{
+                'content':'你的牌库空了，HP-1'
+            });
             p.gamePlayer.HP--;
             return;
         }
@@ -264,6 +268,7 @@ class MainControl {
         let card__=new SystemCardsDic[p.gamePlayer.playerCardLibrary[randIndex]]();
         card__.cid=this.gameCardCount;
         p.gamePlayer.handCardList.push(card__);
+        this.roundControl.getCard(p,card__);
         p.playerSocket.emit('action',{
             'name':'getcard',
             'card':card__

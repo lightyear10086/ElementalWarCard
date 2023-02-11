@@ -23,7 +23,7 @@ exports.m_chianyanzhong= class m_chianyanzhong extends Mark{
 
         },
         //结束阶段
-        onFinish: function () {
+        onFinish: function (self) {
             //TODO
 
         },

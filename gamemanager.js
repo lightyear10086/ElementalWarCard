@@ -359,8 +359,8 @@ class GameRoom{
     GameInit(){
         this.p1.gamePlayer=new Player(this.p1.playerSocket);
         this.p2.gamePlayer=new Player(this.p2.playerSocket);
-        this.p1.gamePlayer.playerCardLibrary=['棘刺'];
-        this.p2.gamePlayer.playerCardLibrary=['棘刺'];
+        this.p1.gamePlayer.playerCardLibrary=['咒潮钢华','唤金者菲奥','咒潮钢华','咒潮钢华','咒潮钢华'];
+        this.p2.gamePlayer.playerCardLibrary=['咒潮钢华','唤金者菲奥','咒潮钢华','咒潮钢华','咒潮钢华'];
         this.p1.gamePlayer.enamy=this.p2.gamePlayer;
         this.p2.gamePlayer.enamy=this.p1.gamePlayer;
         this.battlecontroller=new MainControl(this.p1,this.p2);

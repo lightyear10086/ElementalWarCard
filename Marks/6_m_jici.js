@@ -13,6 +13,7 @@ exports.m_jici= class m_jici extends Mark{
         //凝聚阶段
         onCondensation: function (self) {
             //TODO
+            console.log("棘刺造成伤害");
             if(self.elementArea==GameStatic.Part_Jin){
                 self.controllPlayer.enamy.HP-=2;
             }else{
