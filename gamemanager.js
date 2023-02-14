@@ -14,10 +14,9 @@ var Player=require('../Code/PlayerClass').Player;
 
 var GlobalPlayer=require('../Code/GlobalPlayer').GlobalPlayer;
 var MainControl=require('../Code/MainControl').MainControl;
-
-
 var mysql=require('mysql');
 const { connect } = require('http2');
+var debugManager = require('./DebugCommandManager').debugManager;
 process.env.PWD=process.cwd();
 var connection=mysql.createConnection({
     host:'localhost',
@@ -85,6 +84,10 @@ io.on('connection',(socket)=>{
             });
         }
     });
+    socket.on('debug',function(cmd){
+        console.log("玩家输入指令：",cmd);
+        commandmanager_.runCommand(cmd.command,PlayerSelf);
+    })
     socket.on('action',function(value){
         console.log(value);
         if(value.name=='register'){
@@ -316,8 +319,13 @@ io.on('connection',(socket)=>{
                 return value.card=="cid_"+cur.cid;
             });
             if(card_!=null){
-                console.log("card不为空");
-                PlayerSelf.gamePlayer.UseCardFromHand(card_,value.grid);
+                // console.log("card不为空");
+                if(PlayerSelf.gamePlayer.UseCardFromHand(card_,value.grid)){
+                    PlayerSelf.playerSocket.emit('action',{
+                        'name':'usecardfromhand',
+                        'card':card_.cid
+                    });
+                }
             }
         }
         if(value.name=='surrender'){
@@ -348,6 +356,7 @@ server.listen(8808,()=>{
  */
 
 var ALLROOMS=[];
+var commandmanager_=null;
 class GameRoom{
     constructor(p1,p2){
         this.p1=p1;
@@ -359,12 +368,12 @@ class GameRoom{
     GameInit(){
         this.p1.gamePlayer=new Player(this.p1.playerSocket);
         this.p2.gamePlayer=new Player(this.p2.playerSocket);
-        this.p1.gamePlayer.playerCardLibrary=['咒潮钢华','唤金者菲奥','咒潮钢华','咒潮钢华','咒潮钢华'];
-        this.p2.gamePlayer.playerCardLibrary=['咒潮钢华','唤金者菲奥','咒潮钢华','咒潮钢华','咒潮钢华'];
+        this.p1.gamePlayer.playerCardLibrary=['咒潮钢华','契炎御结','禁魔结界','炽暗焰冢','铁蒺藜','幽林静野','鬼火','棘刺','唤金者菲奥'];
+        this.p2.gamePlayer.playerCardLibrary=['咒潮钢华','契炎御结','禁魔结界','炽暗焰冢','铁蒺藜','幽林静野','鬼火','棘刺','唤金者菲奥'];
         this.p1.gamePlayer.enamy=this.p2.gamePlayer;
         this.p2.gamePlayer.enamy=this.p1.gamePlayer;
         this.battlecontroller=new MainControl(this.p1,this.p2);
-
+        commandmanager_=new debugManager(this.battlecontroller);
         //先后手
         if(randomInt(0,100)>50){
             this.p1.playerSocket.emit('action',{

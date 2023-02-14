@@ -43,6 +43,16 @@ class MainControl {
             }
         }
     }
+    PlayerPointChange(p_,elementType,num_){
+        for(let i of this.landList){
+            for(let j of i.getMarkList1()){
+                j.onPlayerElementPointChange(p_,elementType,num_);
+            }
+            for(let k of i.getMarkList2()){
+                k.onPlayerElementPointChange(p_,elementType,num_);
+            }
+        }
+    }
     gameOver(player_){
         this.gameover=true;
         if(player_==this.p1.gamePlayer && this.p2.gamePlayer.HP>0){
@@ -78,7 +88,25 @@ class MainControl {
     }
     putMarkToLand(player_,landtype_,mark_){
         if(this.gameover){
-            return;
+            return false;
+        }
+        for(let i of this.landList){
+            for(let j of i.getMarkList1()){
+                for(let k of j.components){
+                    console.log(k.gameplayer==player_);
+                    if(k.name=='禁止在元素区召唤标记' && k.gameplayer==player_ && k.enable && k.landtype==landtype_){
+                        return false;
+                    }
+                }
+            }
+            for(let j_ of i.getMarkList2()){
+                for(let k_ of j_.components){
+                    console.log(k_.gameplayer==player_);
+                    if(k_.name=='禁止在元素区召唤标记' && k_.gameplayer==player_ && k_.enable && k_.landtype==landtype_){
+                        return false;
+                    }
+                }
+            }
         }
         this.marksid++;
         mark_.setController(player_);
@@ -238,7 +266,9 @@ class MainControl {
                 j.events.onPutMarkToLand(j,player_,landtype_,mark_);
             }
         }
+        mark_.onSet();
         mark_.events.onSet(mark_);
+        return true;
     }
     //给指定玩家手牌发指定牌
     putCard(p,card_,params){
@@ -246,14 +276,15 @@ class MainControl {
             return;
         }
         if(card_){
-            this.roundControl.getCard(p,card_);
             this.gameCardCount++;
-            p.gamePlayer.handCardList.push(card_);
             card_.cid=this.gameCardCount;
-            p.gamePlayer.playerSocket.emit('action',{
+            p.gamePlayer.handCardList.push(card_);
+            this.roundControl.getCard(p,card_);
+            p.playerSocket.emit('action',{
                 'name':'getcard',
-                'card':JSON.stringify(card_)
+                'card':card_
             });
+            card_.maincontrol=this;
             return card_;
         }
         if(p.gamePlayer.playerCardLibrary.length<=0){

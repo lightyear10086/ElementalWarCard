@@ -3,6 +3,7 @@ var GameStatic=require('../Code/GameStatic').GameStatic;
 exports.Player= class Player {
     constructor(socket_) {
         this.sock=socket_;
+        this.effects=new Array();
         this.HP = GameStatic.HP;
         this.HP_=GameStatic.HP;
         this.pointJin = 0;
@@ -38,6 +39,18 @@ exports.Player= class Player {
 
         this.canMove=true;
         this.moveTimes=1;
+
+        
+    }
+    AddEffect(effect_){
+        this.effects.push(effect_);
+    }
+    RemoveEffect(effect_){
+        for(let i in this.effects){
+            if(this.effects[i]==effect_){
+                this.effects.splice(i,1);
+            }
+        }
     }
     UseCardFromHand(card_,aimpos){
         if(this.handCardList.indexOf(card_)<0){
@@ -50,10 +63,6 @@ exports.Player= class Player {
             this.pointShui-=card_.cost.Shui;
             this.pointHuo-=card_.cost.Huo;
             this.pointTu-=card_.cost.Tu;
-            this.sock.emit('action',{
-                'name':'usecardfromhand',
-                'card':card_.cid
-            });
             console.log("玩家手牌",this.handCardList.length);
             this.handCardList.splice(this.handCardList.indexOf(card_),1);
             console.log("玩家剩余手牌",this.handCardList.length);
@@ -77,7 +86,7 @@ exports.Player= class Player {
                         landtype_=GameStatic.Part_Tu;
                         break;
                 }
-                this.GameController.putMarkToLand(this,landtype_,card_.mark);
+                return this.GameController.putMarkToLand(this,landtype_,card_.mark)
             }
             return true;
         }
@@ -149,6 +158,11 @@ exports.Player= class Player {
                 'params':{}
             });
         }else{
+            for(let i of this.effects){
+                if(i.name=='免疫所有伤害'){
+                    return;
+                }
+            }
             this.sock.emit('anime',{
                 'name':'lostHP',
                 'params':{}
@@ -172,6 +186,10 @@ exports.Player= class Player {
                 }
             });
         }
+        if(this.GameController!=null){
+            this.GameController.PlayerPointChange(this,GameStatic.Part_Jin,val-this.pointJin);
+        }
+        
         this.pointJin_=val;
         this.SyncPlayerInfo();
     }
@@ -187,6 +205,7 @@ exports.Player= class Player {
                 }
             });
         }
+        if(this.GameController!=null) {this.GameController.PlayerPointChange(this,GameStatic.Part_Mu,val-this.pointMu);}
         this.pointMu_=val;
         this.SyncPlayerInfo();
     }
@@ -202,6 +221,7 @@ exports.Player= class Player {
                 }
             });
         }
+        if(this.GameController!=null){this.GameController.PlayerPointChange(this,GameStatic.Part_Shui,val-this.pointShui);}
         this.pointShui_=val;
         this.SyncPlayerInfo();
     }
@@ -217,6 +237,7 @@ exports.Player= class Player {
                 }
             });
         }
+        if(this.GameController!=null){this.GameController.PlayerPointChange(this,GameStatic.Part_Huo,val-this.pointHuo);}
         this.pointHuo_=val;
         this.SyncPlayerInfo();
     }
@@ -232,6 +253,7 @@ exports.Player= class Player {
                 }
             });
         }
+        if(this.GameController!=null){this.GameController.PlayerPointChange(this,GameStatic.Part_Tu,val-this.pointTu);}
         this.pointTu_=val;
         this.SyncPlayerInfo();
     }

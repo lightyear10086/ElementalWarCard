@@ -7,7 +7,11 @@ exports.m_youlinjingye= class m_youlinjingye extends Mark{
         this.lastplayerarea=null;
         this.keepareaturns=0;
     }
-    
+    onFinish(){
+        super.onFinish();
+        //TODO
+        this.lastplayerarea=this.controllPlayer.area;
+    }
     events = {
         onSet(self){
             if(self.elementArea==GameStatic.Part_Mu){
@@ -39,11 +43,7 @@ exports.m_youlinjingye= class m_youlinjingye extends Mark{
         },
         //结束阶段
         onFinish: function (self) {
-            if(self.controllPlayer==self.maincontrol.roundPlayer.gamePlayer){
-                keepTurns--;
-            }
-            //TODO
-            self.lastplayerarea=self.controllPlayer.area;
+            
         },
         onPlayerMove:function(self,moveplayer,startarea,endarea){
             if(startarea!=endarea){

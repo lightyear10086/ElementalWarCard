@@ -8,7 +8,6 @@ exports.RoundControl=class RoundControl {
         this.roundPart = "";//当前回合阶段(凝聚、移动、出牌、结束)
     }
     getCard(player_,card_){
-        console.log("触发111111");
         const landList = this.mainControl.landList;
         for(let i=0;i<landList.length;i++){
             const land = landList[i];
@@ -24,7 +23,7 @@ exports.RoundControl=class RoundControl {
     }
     //下个回合
     nextRound(){
-        console.log("下个回合");
+        // console.log("下个回合");
         if(this.mainControl.gameover){
             return;
         }
@@ -73,7 +72,7 @@ exports.RoundControl=class RoundControl {
             return;
         }
         this.roundPartNum++;
-        console.log("阶段数:",this.roundPartNum);
+        // console.log("阶段数:",this.roundPartNum);
         if(this.roundPartNum == 1){
             this.roundPart = GameStatic.Part_Condensation;
             this.dealPartCondensationEvent();
@@ -145,7 +144,6 @@ exports.RoundControl=class RoundControl {
             let markList1=i.getMarkList1();
             let markList2=i.getMarkList2();
             for(let j of markList1){
-                console.log(j.events);
                 j.events.onPlayerMove(j,player_,startarea_,endarea_);
             }
             for(let j of markList2){
@@ -200,9 +198,7 @@ exports.RoundControl=class RoundControl {
                 // }
             }
             for(let j in markList1){
-                console.log("标记剩余:",markList1[j].keepTurns);
                 if(markList1[j].keepTurns<=0){
-                    console.log("移除标记:",markList1[j].name);
                     this.mainControl.p1.playerSocket.emit('action',{
                         'name':'removemark',
                         'mark':markList1[j].mid
@@ -216,7 +212,6 @@ exports.RoundControl=class RoundControl {
             }
             for(let j in markList2){
                 if(markList2[j].keepTurns<=0){
-                    console.log("移除标记:",markList2[j].name);
                     this.mainControl.p1.playerSocket.emit('action',{
                         'name':'removemark',
                         'mark':markList2[j].mid
