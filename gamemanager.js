@@ -22,7 +22,7 @@ var connection=mysql.createConnection({
     host:'localhost',
     user:'root',
     password:'317406110',
-    database:'elemental',
+    database:'mayalocard2',
     port:'3306'
 });
 connection.connect(function(err){
@@ -36,7 +36,7 @@ connection.on('error',err=>{
         host:'localhost',
         user:'root',
         password:'317406110',
-        database:'elemental',
+        database:'mayalocard2',
         port:'3306'
     });
 })
